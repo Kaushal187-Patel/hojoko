@@ -1,6 +1,7 @@
 import { Cormorant_Garamond, Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import ClientShell from '@/components/ClientShell';
+import { SITE_TAGLINE } from '@/utils/brand';
 
 const sans = Inter({
   subsets: ['latin'],
@@ -15,8 +16,8 @@ const serif = Cormorant_Garamond({
 });
 
 export const metadata = {
-  title: 'HOZOKO | Modern Ecommerce',
-  description: 'Curated fashion and lifestyle essentials with a calm, editorial shopping experience.',
+  title: `HOZOKO | ${SITE_TAGLINE}`,
+  description: SITE_TAGLINE,
 };
 
 export default function RootLayout({ children }) {

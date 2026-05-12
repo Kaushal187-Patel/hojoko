@@ -13,7 +13,10 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    categoryService.getAll().then(({ data }) => setCategories(data.categories));
+    categoryService
+      .getAll()
+      .then(({ data }) => setCategories(data.categories))
+      .catch(() => setCategories([]));
   }, []);
 
   useEffect(() => {
@@ -28,6 +31,10 @@ export default function ProductsPage() {
         });
         if (active) {
           setProducts(data.products);
+        }
+      } catch {
+        if (active) {
+          setProducts([]);
         }
       } finally {
         if (active) {

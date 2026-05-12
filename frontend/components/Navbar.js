@@ -6,13 +6,15 @@ import { usePathname } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '@/redux/slices/authSlice';
 import { clearCartState } from '@/redux/slices/cartSlice';
+import { isAdminUser } from '@/utils/auth';
 import toast from 'react-hot-toast';
 
-const navLinks = [
+const publicNavLinks = [
   { href: '/products', label: 'Shop' },
   { href: '/products?sort=-createdAt', label: 'New arrivals' },
-  { href: '/orders', label: 'Orders' },
 ];
+
+const userNavLinks = [{ href: '/orders', label: 'Orders' }];
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -20,6 +22,8 @@ export default function Navbar() {
   const { user } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
   const cartCount = cart?.totalItems || 0;
+  const adminUser = isAdminUser(user);
+  const navLinks = user ? [...publicNavLinks, ...userNavLinks] : publicNavLinks;
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
@@ -40,7 +44,7 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          {user?.role === 'admin' && (
+          {adminUser && (
             <Link href="/admin" className="nav-link">
               Admin
             </Link>
@@ -58,7 +62,7 @@ export default function Navbar() {
 
           {user ? (
             <>
-              <Link href={user.role === 'admin' ? '/admin' : '/dashboard'} className="hidden transition hover:text-ink sm:inline">
+              <Link href="/dashboard" className="hidden transition hover:text-ink sm:inline">
                 Account
               </Link>
               <button type="button" onClick={handleLogout} className="hidden transition hover:text-ink sm:inline">

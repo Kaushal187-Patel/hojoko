@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { loginUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
+import { isAdminUser } from '@/utils/auth';
+import { SITE_TAGLINE } from '@/utils/brand';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,7 +24,7 @@ export default function LoginPage() {
     if (loginUser.fulfilled.match(result)) {
       toast.success('Welcome back');
       await dispatch(fetchCart());
-      router.push(result.payload.role === 'admin' ? '/admin' : '/dashboard');
+      router.push(isAdminUser(result.payload) ? '/admin' : '/dashboard');
       return;
     }
 
@@ -34,7 +36,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className="card w-full max-w-md space-y-5">
         <div>
           <h1 className="text-2xl font-bold">Login</h1>
-          <p className="mt-1 text-sm text-slate-500">Access your account to shop and track orders.</p>
+          <p className="mt-1 text-sm text-slate-500">{SITE_TAGLINE}</p>
         </div>
 
         <input
@@ -51,8 +53,11 @@ export default function LoginPage() {
           placeholder="Password"
           value={form.password}
           onChange={(event) => setForm({ ...form, password: event.target.value })}
+          autoComplete="current-password"
           required
         />
+
+        <p className="text-xs text-stone-500">Secure sign-in uses JWT stored in an HTTP-only cookie.</p>
 
         <button type="submit" className="btn-primary w-full" disabled={loading}>
           {loading ? 'Signing in...' : 'Login'}

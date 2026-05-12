@@ -7,15 +7,44 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { adminService } from '@/services';
 import { formatCurrency } from '@/utils/helpers';
 
+const emptyAnalytics = {
+  totalUsers: 0,
+  totalProducts: 0,
+  totalOrders: 0,
+  totalRevenue: 0,
+  recentOrders: [],
+  lowStock: [],
+};
+
 export default function AdminDashboardPage() {
-  const [analytics, setAnalytics] = useState(null);
+  const [analytics, setAnalytics] = useState(emptyAnalytics);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    let active = true;
+
     adminService
       .getAnalytics()
-      .then(({ data }) => setAnalytics(data.analytics))
-      .finally(() => setLoading(false));
+      .then(({ data }) => {
+        if (!active) return;
+        setAnalytics(data.analytics || emptyAnalytics);
+        setError('');
+      })
+      .catch((requestError) => {
+        if (!active) return;
+        setAnalytics(emptyAnalytics);
+        setError(requestError.message || 'Unable to load analytics right now.');
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
@@ -30,6 +59,12 @@ export default function AdminDashboardPage() {
             <LoadingSpinner />
           ) : (
             <>
+              {error && (
+                <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  {error}
+                </p>
+              )}
+
               <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <div className="card">
                   <p className="text-sm text-slate-500">Users</p>
@@ -53,12 +88,18 @@ export default function AdminDashboardPage() {
                 <section className="card">
                   <h2 className="text-lg font-semibold">Recent orders</h2>
                   <div className="mt-4 space-y-3">
-                    {analytics.recentOrders.map((order) => (
-                      <div key={order._id} className="rounded-xl border border-slate-100 p-3 text-sm">
-                        <p className="font-medium">{order.user?.name || 'Customer'}</p>
-                        <p className="text-slate-500">{formatCurrency(order.totalPrice)} • {order.status}</p>
-                      </div>
-                    ))}
+                    {analytics.recentOrders.length === 0 ? (
+                      <p className="text-sm text-slate-500">No orders yet.</p>
+                    ) : (
+                      analytics.recentOrders.map((order) => (
+                        <div key={order._id} className="rounded-xl border border-slate-100 p-3 text-sm">
+                          <p className="font-medium">{order.user?.name || 'Customer'}</p>
+                          <p className="text-slate-500">
+                            {formatCurrency(order.totalPrice)} • {order.status}
+                          </p>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </section>
 

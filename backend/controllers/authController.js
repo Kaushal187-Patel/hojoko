@@ -1,14 +1,27 @@
 const User = require('../models/User');
 const { sendTokenCookie, clearTokenCookie } = require('../utils/generateToken');
+const { validatePasswordPair } = require('../utils/passwordValidator');
 
 // @desc    Register user
 // @route   POST /api/auth/signup
 const signup = async (req, res, next) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, confirmPassword, phone } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: 'Name, email, and password are required' });
+    if (!name || !email || !password || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, password, and confirm password are required',
+      });
+    }
+
+    const passwordValidation = validatePasswordPair(password, confirmPassword);
+    if (!passwordValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: passwordValidation.errors[0],
+        errors: passwordValidation.errors,
+      });
     }
 
     const existingUser = await User.findOne({ email });

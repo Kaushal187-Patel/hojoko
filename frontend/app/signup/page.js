@@ -5,19 +5,45 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import PasswordStrength from '@/components/PasswordStrength';
 import { signupUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
+import { validatePasswordPair } from '@/utils/passwordValidation';
+import { SITE_TAGLINE } from '@/utils/brand';
 
 export default function SignupPage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
-  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [formError, setFormError] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setFormError('');
 
-    const result = await dispatch(signupUser(form));
+    const validation = validatePasswordPair(form.password, form.confirmPassword);
+    if (!validation.valid) {
+      setFormError(validation.errors[0]);
+      toast.error(validation.errors[0]);
+      return;
+    }
+
+    const result = await dispatch(
+      signupUser({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        password: form.password,
+        confirmPassword: form.confirmPassword,
+      })
+    );
 
     if (signupUser.fulfilled.match(result)) {
       toast.success('Account created successfully');
@@ -27,6 +53,7 @@ export default function SignupPage() {
     }
 
     toast.error(result.payload || 'Signup failed');
+    setFormError(result.payload || 'Signup failed');
   };
 
   return (
@@ -34,7 +61,7 @@ export default function SignupPage() {
       <form onSubmit={handleSubmit} className="card w-full max-w-md space-y-5">
         <div>
           <h1 className="text-2xl font-bold">Create account</h1>
-          <p className="mt-1 text-sm text-slate-500">Join HOZOKO to save your cart and orders.</p>
+          <p className="mt-1 text-sm text-stone-500">{SITE_TAGLINE}</p>
         </div>
 
         <input
@@ -64,14 +91,32 @@ export default function SignupPage() {
           placeholder="Password"
           value={form.password}
           onChange={(event) => setForm({ ...form, password: event.target.value })}
+          autoComplete="new-password"
           required
         />
+        <input
+          className="input-field"
+          type="password"
+          placeholder="Re-enter password"
+          value={form.confirmPassword}
+          onChange={(event) => setForm({ ...form, confirmPassword: event.target.value })}
+          autoComplete="new-password"
+          required
+        />
+
+        <PasswordStrength password={form.password} />
+
+        {form.confirmPassword && form.password !== form.confirmPassword && (
+          <p className="text-sm text-red-600">Passwords do not match.</p>
+        )}
+
+        {formError && <p className="text-sm text-red-600">{formError}</p>}
 
         <button type="submit" className="btn-primary w-full" disabled={loading}>
           {loading ? 'Creating account...' : 'Sign up'}
         </button>
 
-        <p className="text-center text-sm text-slate-500">
+        <p className="text-center text-sm text-stone-500">
           Already have an account?{' '}
           <Link href="/login" className="font-semibold text-brand-600">
             Login

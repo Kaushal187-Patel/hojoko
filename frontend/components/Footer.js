@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Logo from '@/components/Logo';
+import { SITE_TAGLINE } from '@/utils/brand';
 
 const footerLinks = {
   Navigate: [
@@ -22,9 +23,7 @@ export default function Footer() {
       <div className="container-page grid gap-10 py-14 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <Logo linked={false} />
-          <p className="mt-4 max-w-sm text-sm leading-7 text-stone-600">
-            Curated essentials, editorial styling, and a calm shopping experience inspired by modern luxury retail.
-          </p>
+          <p className="mt-4 max-w-sm text-sm leading-7 text-stone-600">{SITE_TAGLINE}</p>
         </div>
 
         {Object.entries(footerLinks).map(([title, links]) => (
@@ -46,7 +45,7 @@ export default function Footer() {
       <div className="border-t border-stone-200">
         <div className="container-page flex flex-col gap-3 py-6 text-sm text-stone-500 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} HOZOKO</p>
-          <p>Fast shipping, secure checkout, and responsive support.</p>
+          <p>{SITE_TAGLINE}</p>
         </div>
       </div>
     </footer>

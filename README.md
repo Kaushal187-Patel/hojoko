@@ -165,8 +165,10 @@ npm start
 
 After running the seed script:
 
-- Admin: `admin@hozoko.com` / `admin123`
-- User: `user@hozoko.com` / `user123`
+- Admin username: `admin@hozoko.com`
+- Admin password: `Admin@123`
+- Demo user username: `user@hozoko.com`
+- Demo user password: `User@123`
 
 ## Environment Variables
 
