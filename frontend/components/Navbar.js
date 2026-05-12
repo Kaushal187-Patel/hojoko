@@ -42,7 +42,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-stone-200 bg-canvas/95 backdrop-blur">
-      <div className="container-page flex h-16 items-center justify-between gap-4 md:grid md:h-20 md:grid-cols-[1fr_auto_1fr]">
+      <div className="container-page flex h-16 items-center justify-between md:grid md:h-20 md:grid-cols-[1fr_auto_1fr]">
         <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
@@ -64,20 +64,13 @@ export default function Navbar() {
           <Logo />
         </div>
 
-        <div className="flex items-center justify-end gap-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-ink md:gap-5">
+        <div className="flex items-center justify-end gap-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-ink md:justify-self-end md:gap-5">
           <Link href="/products" className="hidden transition hover:text-stone-600 lg:inline">
             Search
           </Link>
 
           {user ? (
             <>
-              <Link
-                href="/profile"
-                aria-label="Profile"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 text-ink transition hover:border-ink md:hidden"
-              >
-                <ProfileIcon />
-              </Link>
               <Link href="/dashboard" className="hidden transition hover:text-stone-600 md:inline">
                 Account
               </Link>
@@ -86,7 +79,7 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <Link href="/login" className="transition hover:text-stone-600">
+            <Link href="/login" className="hidden transition hover:text-stone-600 md:inline">
               Sign in
             </Link>
           )}
@@ -99,6 +92,20 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
+          {user ? (
+            <Link
+              href="/profile"
+              aria-label="Profile"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 text-ink transition hover:border-ink md:hidden"
+            >
+              <ProfileIcon />
+            </Link>
+          ) : (
+            <Link href="/login" className="transition hover:text-stone-600 md:hidden">
+              Sign in
+            </Link>
+          )}
         </div>
       </div>
     </header>

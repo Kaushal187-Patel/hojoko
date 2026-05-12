@@ -20,7 +20,7 @@ export default function FeaturedProducts({ products = [] }) {
       {products.length === 0 ? (
         <p className="text-sm text-stone-500">Featured products will appear here once the catalog is live.</p>
       ) : (
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:grid-cols-4">
           {products.map((product, index) => (
             <ProductCard key={product._id} product={product} priority={index < 4} isNew={index < 4} />
           ))}

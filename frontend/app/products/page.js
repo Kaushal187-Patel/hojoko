@@ -87,7 +87,7 @@ export default function ProductsPage() {
         ) : products.length === 0 ? (
           <p className="text-sm text-stone-500">No products found.</p>
         ) : (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:grid-cols-4">
             {products.map((product, index) => (
               <ProductCard key={product._id} product={product} priority={index < 4} />
             ))}
