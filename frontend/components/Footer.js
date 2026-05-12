@@ -20,8 +20,8 @@ const footerLinks = {
 export default function Footer() {
   return (
     <footer className="mt-20 border-t border-stone-200 bg-white">
-      <div className="container-page grid gap-10 py-14 md:grid-cols-[1.2fr_1fr_1fr]">
-        <div>
+      <div className="container-page grid grid-cols-2 gap-8 py-14 md:grid-cols-[1.2fr_1fr_1fr] md:gap-10">
+        <div className="col-span-2 md:col-span-1">
           <Logo linked={false} />
           <p className="mt-4 max-w-sm text-sm leading-7 text-stone-600">{SITE_TAGLINE}</p>
         </div>

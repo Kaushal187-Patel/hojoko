@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
-import { SITE_TAGLINE } from '@/utils/brand';
 
 export default function FeaturedProducts({ products = [] }) {
   return (
@@ -8,7 +7,7 @@ export default function FeaturedProducts({ products = [] }) {
       <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="eyebrow">New arrivals</p>
-          <h2 className="section-title mt-3">{SITE_TAGLINE}</h2>
+          <h2 className="section-title mt-3">Featured products</h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-stone-600">
             Fresh silhouettes, soft palettes, and wardrobe essentials selected for warmer days and easy styling.
           </p>
