@@ -39,8 +39,8 @@ export default function CartPage() {
 
   return (
     <ProtectedRoute>
-      <div className="container-page py-10">
-        <h1 className="text-3xl font-bold">Your cart</h1>
+      <div className="page-shell">
+        <h1 className="page-title">Your cart</h1>
 
         {loading ? (
           <LoadingSpinner />
@@ -52,7 +52,7 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
-          <div className="mt-8 grid gap-6 lg:grid-cols-[2fr_1fr]">
+          <div className="cart-grid">
             <div className="space-y-4">
               {cart.items.map((item) => (
                 <div key={item._id} className="card flex flex-col gap-4 sm:flex-row sm:items-center">

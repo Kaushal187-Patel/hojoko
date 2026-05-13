@@ -1,16 +1,17 @@
 'use client';
 
 import { getPasswordRuleStatus } from '@/utils/passwordValidation';
+import { cn } from '@/utils/cn';
 
 export default function PasswordStrength({ password = '' }) {
   const rules = getPasswordRuleStatus(password);
 
   return (
-    <div className="space-y-2 rounded-xl border border-stone-200 bg-stone-50 p-4">
-      <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-stone-600">Password requirements</p>
+    <div className="surface-panel space-y-2">
+      <p className="field-label">Password requirements</p>
       <ul className="space-y-2">
         {rules.map((rule) => (
-          <li key={rule.key} className={`text-sm ${rule.passed ? 'text-emerald-700' : 'text-stone-500'}`}>
+          <li key={rule.key} className={cn('text-sm', rule.passed ? 'text-pass' : 'text-fail')}>
             {rule.passed ? '✓' : '○'} {rule.message}
           </li>
         ))}

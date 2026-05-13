@@ -11,6 +11,19 @@ const getCategories = async (req, res, next) => {
   }
 };
 
+const uploadCategoryImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No image uploaded' });
+    }
+
+    const image = `${req.protocol}://${req.get('host')}/uploads/categories/${req.file.filename}`;
+    res.status(201).json({ success: true, image });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Create category
 // @route   POST /api/categories
 const createCategory = async (req, res, next) => {
@@ -57,4 +70,4 @@ const deleteCategory = async (req, res, next) => {
   }
 };
 
-module.exports = { getCategories, createCategory, updateCategory, deleteCategory };
+module.exports = { getCategories, uploadCategoryImage, createCategory, updateCategory, deleteCategory };

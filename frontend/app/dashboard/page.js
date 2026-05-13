@@ -7,10 +7,12 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { orderService } from '@/services';
 import { formatCurrency } from '@/utils/helpers';
+import { isAdminUser } from '@/utils/auth';
 
 export default function DashboardPage() {
   const { user } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
+  const adminUser = isAdminUser(user);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,31 +25,38 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="container-page py-10">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Welcome, {user?.name}</h1>
-          <p className="mt-2 text-slate-500">Manage your shopping activity from one place.</p>
+      <div className="page-shell">
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="page-title">Welcome, {user?.name}</h1>
+            <p className="page-subtitle">Manage your shopping activity from one place.</p>
+          </div>
+          {adminUser && (
+            <Link href="/admin" className="btn-primary w-full md:w-auto">
+              Open admin dashboard
+            </Link>
+          )}
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="dashboard-stats">
           <div className="card">
-            <p className="text-sm text-slate-500">Cart items</p>
-            <p className="mt-2 text-3xl font-bold">{cart?.totalItems || 0}</p>
+            <p className="card-label">Cart items</p>
+            <p className="card-value">{cart?.totalItems || 0}</p>
           </div>
           <div className="card">
-            <p className="text-sm text-slate-500">Cart total</p>
-            <p className="mt-2 text-3xl font-bold">{formatCurrency(cart?.totalAmount || 0)}</p>
+            <p className="card-label">Cart total</p>
+            <p className="card-value">{formatCurrency(cart?.totalAmount || 0)}</p>
           </div>
           <div className="card">
-            <p className="text-sm text-slate-500">Recent orders</p>
-            <p className="mt-2 text-3xl font-bold">{orders.length}</p>
+            <p className="card-label">Recent orders</p>
+            <p className="card-value">{orders.length}</p>
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div className="cart-grid">
           <section className="card">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Recent orders</h2>
+              <h2 className="section-heading">Recent orders</h2>
               <Link href="/orders" className="text-sm font-semibold text-brand-600">
                 View all
               </Link>
@@ -60,7 +69,7 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-3">
                 {orders.map((order) => (
-                  <div key={order._id} className="flex items-center justify-between rounded-xl border border-slate-100 p-4">
+                  <div key={order._id} className="list-row-lg">
                     <div>
                       <p className="font-medium">Order #{order._id.slice(-6)}</p>
                       <p className="text-sm text-slate-500">{new Date(order.createdAt).toLocaleString()}</p>
@@ -76,7 +85,7 @@ export default function DashboardPage() {
           </section>
 
           <section className="card space-y-4">
-            <h2 className="text-lg font-semibold">Quick links</h2>
+            <h2 className="section-heading">Quick links</h2>
             <Link href="/products" className="btn-primary w-full">
               Continue shopping
             </Link>

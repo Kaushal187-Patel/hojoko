@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminLayout from '@/components/ui/AdminLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { orderService } from '@/services';
 import { formatCurrency } from '@/utils/helpers';
@@ -40,12 +40,9 @@ export default function AdminOrdersPage() {
 
   return (
     <ProtectedRoute adminOnly>
-      <div className="container-page grid gap-8 py-10 lg:grid-cols-[240px_1fr]">
-        <AdminSidebar />
-        <div>
-          <h1 className="text-3xl font-bold">Manage orders</h1>
+      <AdminLayout title="Manage orders">
 
-          {loading ? (
+{loading ? (
             <LoadingSpinner />
           ) : (
             <div className="mt-8 space-y-4">
@@ -72,8 +69,7 @@ export default function AdminOrdersPage() {
               ))}
             </div>
           )}
-        </div>
-      </div>
+      </AdminLayout>
     </ProtectedRoute>
   );
 }

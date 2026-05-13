@@ -9,11 +9,11 @@ export default function AnnouncementBar() {
   const ticker = [...messages, ...messages];
 
   return (
-    <div className="border-b border-stone-200 bg-stone-50 text-stone-700">
+    <div className="announcement-bar">
       <div className="overflow-hidden py-2.5">
-        <div className="flex w-max animate-marquee gap-10 whitespace-nowrap px-4">
+        <div className="announcement-track">
           {ticker.map((message, index) => (
-            <span key={`${message}-${index}`} className="text-[11px] uppercase tracking-[0.24em]">
+            <span key={`${message}-${index}`} className="announcement-text">
               {message}
             </span>
           ))}

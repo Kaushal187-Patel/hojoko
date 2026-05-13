@@ -9,6 +9,7 @@ import { loginUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
 import { isAdminUser } from '@/utils/auth';
 import { SITE_TAGLINE } from '@/utils/brand';
+import AuthLayout from '@/components/ui/AuthLayout';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,11 +33,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container-page flex min-h-[70vh] items-center justify-center py-12">
-      <form onSubmit={handleSubmit} className="card w-full max-w-md space-y-5">
+    <AuthLayout>
+      <form onSubmit={handleSubmit} className="auth-form">
         <div>
           <h1 className="text-2xl font-bold">Login</h1>
-          <p className="mt-1 text-sm text-slate-500">{SITE_TAGLINE}</p>
+          <p className="mt-1 body-muted">{SITE_TAGLINE}</p>
         </div>
 
         <input
@@ -63,13 +64,13 @@ export default function LoginPage() {
           {loading ? 'Signing in...' : 'Login'}
         </button>
 
-        <p className="text-center text-sm text-slate-500">
+        <p className="text-center body-muted">
           New here?{' '}
-          <Link href="/signup" className="font-semibold text-brand-600">
+          <Link href="/signup" className="brand-link">
             Create an account
           </Link>
         </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }

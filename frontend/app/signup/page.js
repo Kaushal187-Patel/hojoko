@@ -10,6 +10,7 @@ import { signupUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
 import { validatePasswordPair } from '@/utils/passwordValidation';
 import { SITE_TAGLINE } from '@/utils/brand';
+import AuthLayout from '@/components/ui/AuthLayout';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -57,11 +58,11 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="container-page flex min-h-[70vh] items-center justify-center py-12">
-      <form onSubmit={handleSubmit} className="card w-full max-w-md space-y-5">
+    <AuthLayout>
+      <form onSubmit={handleSubmit} className="auth-form">
         <div>
           <h1 className="text-2xl font-bold">Create account</h1>
-          <p className="mt-1 text-sm text-stone-500">{SITE_TAGLINE}</p>
+          <p className="mt-1 body-muted">{SITE_TAGLINE}</p>
         </div>
 
         <input
@@ -107,22 +108,22 @@ export default function SignupPage() {
         <PasswordStrength password={form.password} />
 
         {form.confirmPassword && form.password !== form.confirmPassword && (
-          <p className="text-sm text-red-600">Passwords do not match.</p>
+          <p className="danger-text">Passwords do not match.</p>
         )}
 
-        {formError && <p className="text-sm text-red-600">{formError}</p>}
+        {formError && <p className="danger-text">{formError}</p>}
 
         <button type="submit" className="btn-primary w-full" disabled={loading}>
           {loading ? 'Creating account...' : 'Sign up'}
         </button>
 
-        <p className="text-center text-sm text-stone-500">
+        <p className="text-center body-muted">
           Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-brand-600">
+          <Link href="/login" className="brand-link">
             Login
           </Link>
         </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }

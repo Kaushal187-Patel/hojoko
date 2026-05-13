@@ -1,10 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Composed from styles/components.css — edit that file, then: npm run styles */
+/* Reusable component classes — extracted from repeated Tailwind utilities */
 @layer components {
-
   /* Layout shells */
   .container-page {
     @apply mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8;
@@ -332,44 +327,4 @@
   .danger-text {
     @apply text-sm text-red-600;
   }
-}
-
-/* Composed from styles/utilities.css */
-@layer utilities {
-
-  .text-pass {
-    @apply text-emerald-700;
-  }
-
-  .text-fail {
-    @apply text-stone-500;
-  }
-
-  .nav-link-active {
-    @apply text-ink;
-  }
-
-  .admin-nav-active {
-    @apply bg-brand-50 text-brand-700;
-  }
-
-  .admin-nav-idle {
-    @apply text-slate-600 hover:bg-slate-50;
-  }
-
-  .thumb-dimmed {
-    @apply brightness-75;
-  }
-
-  .overlay-dark {
-    @apply absolute inset-0 flex items-center justify-center bg-black/45 text-2xl font-semibold text-white;
-  }
-}
-
-:root {
-  color-scheme: light;
-}
-
-body {
-  @apply bg-canvas font-sans text-ink antialiased;
 }

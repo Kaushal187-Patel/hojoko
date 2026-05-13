@@ -1,15 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/ProductCard';
 import ProductGridSkeleton from '@/components/ProductGridSkeleton';
+import ProductGrid from '@/components/ui/ProductGrid';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { categoryService, productService } from '@/services';
 
-export default function ProductsPage() {
+function ProductsContent() {
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(() => searchParams.get('category') || '');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,6 +22,10 @@ export default function ProductsPage() {
       .then(({ data }) => setCategories(data.categories))
       .catch(() => setCategories([]));
   }, []);
+
+  useEffect(() => {
+    setCategory(searchParams.get('category') || '');
+  }, [searchParams]);
 
   useEffect(() => {
     let active = true;
@@ -50,22 +58,34 @@ export default function ProductsPage() {
     };
   }, [search, category]);
 
+  const activeCategory = categories.find((item) => item.slug === category);
+
   return (
     <div>
-      <section className="border-b border-stone-200 bg-white">
-        <div className="container-page py-12 md:py-16">
+      <section className="surface-band">
+        <div className="surface-band-inner">
           <p className="eyebrow">Shop</p>
           <h1 className="section-title mt-3">
-            All <span className="italic">Products</span>
+            {activeCategory ? (
+              <>
+                <span className="italic">{activeCategory.name}</span>
+              </>
+            ) : (
+              <>
+                All <span className="italic">Products</span>
+              </>
+            )}
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-stone-600">
-            Browse the full catalog with search and category filters.
+          <p className="body-copy mt-4 max-w-2xl">
+            {activeCategory
+              ? `Browse products in ${activeCategory.name}.`
+              : 'Browse the full catalog with search and category filters.'}
           </p>
         </div>
       </section>
 
       <section className="container-page py-10">
-        <div className="mb-10 grid gap-4 md:grid-cols-[1fr_220px]">
+        <div className="filter-bar">
           <input
             className="input-field"
             placeholder="Search products"
@@ -85,15 +105,23 @@ export default function ProductsPage() {
         {loading ? (
           <ProductGridSkeleton />
         ) : products.length === 0 ? (
-          <p className="text-sm text-stone-500">No products found.</p>
+          <p className="body-muted">No products found.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:grid-cols-4">
+          <ProductGrid>
             {products.map((product, index) => (
               <ProductCard key={product._id} product={product} priority={index < 4} />
             ))}
-          </div>
+          </ProductGrid>
         )}
       </section>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <ProductsContent />
+    </Suspense>
   );
 }

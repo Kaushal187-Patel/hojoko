@@ -19,9 +19,9 @@ export default function OrdersPage() {
 
   return (
     <ProtectedRoute>
-      <div className="container-page py-10">
-        <h1 className="text-3xl font-bold">Order history</h1>
-        <p className="mt-2 text-slate-500">Track payment and delivery status for your purchases.</p>
+      <div className="page-shell">
+        <h1 className="page-title">Order history</h1>
+        <p className="page-subtitle">Track payment and delivery status for your purchases.</p>
 
         {loading ? (
           <LoadingSpinner />

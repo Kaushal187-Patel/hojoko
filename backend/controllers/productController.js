@@ -63,6 +63,19 @@ const getProductById = async (req, res, next) => {
   }
 };
 
+const uploadProductImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No image uploaded' });
+    }
+
+    const image = `${req.protocol}://${req.get('host')}/uploads/products/${req.file.filename}`;
+    res.status(201).json({ success: true, image });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Create product
 // @route   POST /api/products
 const createProduct = async (req, res, next) => {
@@ -116,6 +129,7 @@ const deleteProduct = async (req, res, next) => {
 module.exports = {
   getProducts,
   getProductById,
+  uploadProductImage,
   createProduct,
   updateProduct,
   deleteProduct,

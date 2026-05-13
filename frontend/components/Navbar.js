@@ -7,12 +7,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '@/redux/slices/authSlice';
 import { clearCartState } from '@/redux/slices/cartSlice';
 import { isAdminUser } from '@/utils/auth';
+import { cn } from '@/utils/cn';
 import toast from 'react-hot-toast';
 
-const publicNavLinks = [
-  { href: '/products', label: 'Shop' },
-  { href: '/products?sort=-createdAt', label: 'New arrivals' },
-];
+const publicNavLinks = [{ href: '/products', label: 'Shop' }];
 
 const userNavLinks = [{ href: '/orders', label: 'Orders' }];
 
@@ -41,14 +39,14 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-stone-200 bg-canvas/95 backdrop-blur">
-      <div className="container-page flex h-16 items-center justify-between md:grid md:h-20 md:grid-cols-[1fr_auto_1fr]">
+    <header className="site-header">
+      <div className="site-header-inner">
         <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`nav-link ${pathname === link.href ? 'text-ink' : ''}`}
+              className={cn('nav-link', pathname === link.href && 'nav-link-active')}
             >
               {link.label}
             </Link>
@@ -64,45 +62,47 @@ export default function Navbar() {
           <Logo />
         </div>
 
-        <div className="flex items-center justify-end gap-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-ink md:justify-self-end md:gap-5">
-          <Link href="/products" className="hidden transition hover:text-stone-600 lg:inline">
+        <div className="header-actions">
+          <Link href="/products" className="header-action hidden lg:inline">
             Search
           </Link>
 
           {user ? (
             <>
-              <Link href="/dashboard" className="hidden transition hover:text-stone-600 md:inline">
+              <Link href="/dashboard" className="header-action hidden md:inline">
                 Account
               </Link>
-              <button type="button" onClick={handleLogout} className="hidden transition hover:text-stone-600 md:inline">
+              <button type="button" onClick={handleLogout} className="header-action hidden md:inline">
                 Logout
               </button>
             </>
           ) : (
-            <Link href="/login" className="hidden transition hover:text-stone-600 md:inline">
+            <Link href="/login" className="header-action hidden md:inline">
               Sign in
             </Link>
           )}
 
-          <Link href="/cart" className="relative transition hover:text-stone-600">
+          <Link href="/cart" className="header-action relative">
             Cart
-            {cartCount > 0 && (
-              <span className="absolute -right-3 -top-3 flex h-4 min-w-4 items-center justify-center rounded-full bg-ink px-1 text-[10px] text-white">
-                {cartCount}
-              </span>
-            )}
+            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </Link>
+
+          {adminUser && (
+            <Link href="/admin" className="header-action md:hidden">
+              Admin
+            </Link>
+          )}
 
           {user ? (
             <Link
-              href="/profile"
-              aria-label="Profile"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 text-ink transition hover:border-ink md:hidden"
+              href={adminUser ? '/admin' : '/dashboard'}
+              aria-label={adminUser ? 'Admin dashboard' : 'Dashboard'}
+              className="profile-button"
             >
               <ProfileIcon />
             </Link>
           ) : (
-            <Link href="/login" className="transition hover:text-stone-600 md:hidden">
+            <Link href="/login" className="header-action md:hidden">
               Sign in
             </Link>
           )}

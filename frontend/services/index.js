@@ -10,6 +10,13 @@ export const authService = {
 export const productService = {
   getAll: (params) => api.get('/products', { params }),
   getById: (id) => api.get(`/products/${id}`),
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return api.post('/products/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
   create: (data) => api.post('/products', data),
   update: (id, data) => api.put(`/products/${id}`, data),
   remove: (id) => api.delete(`/products/${id}`),
@@ -45,6 +52,13 @@ export const adminService = {
 
 export const categoryService = {
   getAll: () => api.get('/categories'),
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return api.post('/categories/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
   create: (data) => api.post('/categories', data),
   update: (id, data) => api.put(`/categories/${id}`, data),
   remove: (id) => api.delete(`/categories/${id}`),

@@ -19,11 +19,11 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="mt-20 border-t border-stone-200 bg-white">
-      <div className="container-page grid grid-cols-2 gap-8 py-14 md:grid-cols-[1.2fr_1fr_1fr] md:gap-10">
+    <footer className="site-footer">
+      <div className="site-footer-grid">
         <div className="col-span-2 md:col-span-1">
           <Logo linked={false} />
-          <p className="mt-4 max-w-sm text-sm leading-7 text-stone-600">{SITE_TAGLINE}</p>
+          <p className="body-copy mt-4 max-w-sm">{SITE_TAGLINE}</p>
         </div>
 
         {Object.entries(footerLinks).map(([title, links]) => (
@@ -32,7 +32,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-3">
               {links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-stone-700 transition hover:text-ink">
+                  <Link href={link.href} className="footer-link">
                     {link.label}
                   </Link>
                 </li>
@@ -42,8 +42,8 @@ export default function Footer() {
         ))}
       </div>
 
-      <div className="border-t border-stone-200">
-        <div className="container-page flex flex-col gap-3 py-6 text-sm text-stone-500 md:flex-row md:items-center md:justify-between">
+      <div className="site-footer-bar">
+        <div className="site-footer-bar-inner">
           <p>© {new Date().getFullYear()} HOZOKO</p>
           <p>{SITE_TAGLINE}</p>
         </div>

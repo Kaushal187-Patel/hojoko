@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminLayout from '@/components/ui/AdminLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { categoryService, productService } from '@/services';
 import { formatCurrency } from '@/utils/helpers';
@@ -24,6 +25,7 @@ export default function AdminProductsPage() {
   const [form, setForm] = useState(emptyProduct);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [uploadingIndex, setUploadingIndex] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -83,6 +85,25 @@ export default function AdminProductsPage() {
     });
   };
 
+  const handleImageUpload = async (event, index) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingIndex(index);
+    try {
+      const { data } = await productService.uploadImage(file);
+      const nextImages = [...form.images];
+      nextImages[index] = data.image;
+      setForm({ ...form, images: nextImages });
+      toast.success('Image uploaded');
+    } catch (error) {
+      toast.error(error.message || 'Image upload failed');
+    } finally {
+      setUploadingIndex(null);
+      event.target.value = '';
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       await productService.remove(id);
@@ -95,12 +116,9 @@ export default function AdminProductsPage() {
 
   return (
     <ProtectedRoute adminOnly>
-      <div className="container-page grid gap-8 py-10 lg:grid-cols-[240px_1fr]">
-        <AdminSidebar />
-        <div>
-          <h1 className="text-3xl font-bold">Manage products</h1>
+      <AdminLayout title="Manage products">
 
-          <form onSubmit={handleSubmit} className="card mt-8 grid gap-4 md:grid-cols-2">
+<form onSubmit={handleSubmit} className="card mt-8 grid gap-4 md:grid-cols-2">
             <input className="input-field md:col-span-2" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             <textarea className="input-field md:col-span-2" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
             <input className="input-field" type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
@@ -114,7 +132,78 @@ export default function AdminProductsPage() {
                 </option>
               ))}
             </select>
-            <input className="input-field md:col-span-2" placeholder="Image URL" value={form.images[0]} onChange={(e) => setForm({ ...form, images: [e.target.value] })} />
+            <div className="md:col-span-2 space-y-3">
+              <p className="text-sm font-medium text-slate-700">Product images</p>
+              <p className="text-sm text-slate-500">Paste an image URL or upload a file for each slot.</p>
+              {form.images.map((image, index) => (
+                <div key={`image-${index}`} className="space-y-2 rounded-xl border border-stone-200 p-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                    {image ? (
+                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-stone-200 bg-stone-100">
+                        <Image src={image} alt={`Product image ${index + 1}`} fill className="object-cover" sizes="80px" />
+                      </div>
+                    ) : (
+                      <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-dashed border-stone-300 bg-stone-50 text-xs text-stone-400">
+                        No image
+                      </div>
+                    )}
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <input
+                        className="input-field"
+                        placeholder={`Image URL ${index + 1}`}
+                        value={image}
+                        onChange={(event) => {
+                          const nextImages = [...form.images];
+                          nextImages[index] = event.target.value;
+                          setForm({ ...form, images: nextImages });
+                        }}
+                      />
+                      <div className="flex flex-wrap gap-2">
+                        <label className="btn-secondary cursor-pointer">
+                          {uploadingIndex === index ? 'Uploading...' : image ? 'Replace file' : 'Upload file'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(event) => handleImageUpload(event, index)}
+                            disabled={uploadingIndex !== null}
+                          />
+                        </label>
+                        {image && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={() => {
+                              const nextImages = [...form.images];
+                              nextImages[index] = '';
+                              setForm({ ...form, images: nextImages });
+                            }}
+                          >
+                            Clear
+                          </button>
+                        )}
+                        {form.images.length > 1 && (
+                          <button
+                            type="button"
+                            className="btn-secondary text-red-600"
+                            onClick={() => setForm({ ...form, images: form.images.filter((_, itemIndex) => itemIndex !== index) })}
+                          >
+                            Remove slot
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setForm({ ...form, images: [...form.images, ''] })}
+              >
+                Add image slot
+              </button>
+            </div>
             <button type="submit" className="btn-primary md:col-span-2">
               {editingId ? 'Update product' : 'Add product'}
             </button>
@@ -144,8 +233,7 @@ export default function AdminProductsPage() {
               ))}
             </div>
           )}
-        </div>
-      </div>
+      </AdminLayout>
     </ProtectedRoute>
   );
 }

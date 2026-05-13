@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./app/**/*.{js,jsx}', './components/**/*.{js,jsx}'],
+  // Scan app, components, and utils for class names (production purge)
+  content: ['./app/**/*.{js,jsx}', './components/**/*.{js,jsx}', './utils/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {

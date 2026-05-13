@@ -76,9 +76,21 @@ const seed = async () => {
   ]);
 
   const categories = await Category.insertMany([
-    { name: 'Electronics', description: 'Gadgets and devices' },
-    { name: 'Fashion', description: 'Clothing and accessories' },
-    { name: 'Home', description: 'Home and living essentials' },
+    {
+      name: 'Electronics',
+      description: 'Gadgets and devices',
+      image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      name: 'Fashion',
+      description: 'Clothing and accessories',
+      image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      name: 'Home',
+      description: 'Home and living essentials',
+      image: 'https://images.unsplash.com/photo-1484101403633-562f891dc0a3?auto=format&fit=crop&w=800&q=80',
+    },
   ]);
 
   const products = await Product.insertMany([
@@ -90,7 +102,14 @@ const seed = async () => {
       category: categories[0]._id,
       stock: 25,
       brand: 'SoundMax',
-      images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80'],
+      images: [
+        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=800&q=80',
+      ],
       isFeatured: true,
       createdBy: admin._id,
     },
@@ -101,7 +120,13 @@ const seed = async () => {
       category: categories[1]._id,
       stock: 3,
       brand: 'TimeCraft',
-      images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80'],
+      images: [
+        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1508685096489-7aacad43d435?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1533139502658-0198f4d9a8c0?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1614164185124-d601507919c6?auto=format&fit=crop&w=800&q=80',
+      ],
       isFeatured: true,
       createdBy: admin._id,
     },

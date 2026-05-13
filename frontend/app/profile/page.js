@@ -35,8 +35,8 @@ export default function ProfilePage() {
 
   return (
     <ProtectedRoute>
-      <div className="container-page py-10">
-        <h1 className="text-3xl font-bold">Profile</h1>
+      <div className="page-shell">
+        <h1 className="page-title">Profile</h1>
 
         {loading ? (
           <LoadingSpinner />

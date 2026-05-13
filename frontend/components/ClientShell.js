@@ -17,7 +17,7 @@ export default function ClientShell({ children }) {
       <AuthBootstrap>
         <AnnouncementBar />
         <Navbar />
-        <main className="min-h-[calc(100vh-8rem)]">{children}</main>
+        <main className="main-shell">{children}</main>
         <Footer />
         <Toaster position="top-right" />
       </AuthBootstrap>
