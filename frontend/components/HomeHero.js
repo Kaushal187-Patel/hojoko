@@ -22,7 +22,7 @@ export default function HomeHero() {
             <Link href="/products" className="btn-primary border-white bg-white text-ink hover:bg-stone-100">
               Shop now
             </Link>
-            <Link href="/signup" className="btn-secondary border-white/40 bg-transparent text-white hover:border-white">
+            <Link href="/?auth=signup" className="btn-secondary border-white/40 bg-transparent text-white hover:border-white" scroll={false}>
               Create account
             </Link>
           </div>

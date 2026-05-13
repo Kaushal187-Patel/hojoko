@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import AuthBootstrap from '@/components/AuthBootstrap';
+import AuthModalGate from '@/components/auth/AuthModalGate';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import StoreProvider from '@/redux/StoreProvider';
@@ -18,6 +19,7 @@ export default function ClientShell({ children }) {
         <AnnouncementBar />
         <Navbar />
         <main className="main-shell">{children}</main>
+        <AuthModalGate />
         <Footer />
         <Toaster position="top-right" />
       </AuthBootstrap>

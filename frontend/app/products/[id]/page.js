@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -13,6 +13,7 @@ import { formatCurrency } from '@/utils/helpers';
 export default function ProductDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [product, setProduct] = useState(null);
@@ -29,7 +30,7 @@ export default function ProductDetailsPage() {
 
   const handleAddToCart = async () => {
     if (!user) {
-      router.push('/login');
+      router.push(`${pathname}?auth=login`);
       return;
     }
 

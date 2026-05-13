@@ -20,6 +20,7 @@ export default function ProductCard({ product, priority = false, isNew = false }
         <p className="meta-label">{product.category?.name || 'Collection'}</p>
         <h3 className="product-card-title">{product.name}</h3>
         <p className="product-card-price">{formatCurrency(product.price)}</p>
+        <p className="text-xs text-stone-500">{product.stock} available</p>
       </div>
     </Link>
   );

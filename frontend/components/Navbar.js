@@ -77,7 +77,7 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <Link href="/login" className="header-action hidden md:inline">
+            <Link href={`${pathname}?auth=login`} className="header-action hidden md:inline" scroll={false}>
               Sign in
             </Link>
           )}
@@ -102,7 +102,7 @@ export default function Navbar() {
               <ProfileIcon />
             </Link>
           ) : (
-            <Link href="/login" className="header-action md:hidden">
+            <Link href={`${pathname}?auth=login`} className="header-action md:hidden" scroll={false}>
               Sign in
             </Link>
           )}

@@ -12,8 +12,8 @@ const footerLinks = {
   Support: [
     { href: '/checkout', label: 'Checkout' },
     { href: '/cart', label: 'Cart' },
-    { href: '/login', label: 'Sign in' },
-    { href: '/signup', label: 'Create account' },
+    { href: '?auth=login', label: 'Sign in' },
+    { href: '?auth=signup', label: 'Create account' },
   ],
 };
 
