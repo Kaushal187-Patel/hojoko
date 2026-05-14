@@ -139,7 +139,7 @@ export default function ProductCard({
               onClick={handleAddToCart}
               disabled={adding || product.stock < 1}
             >
-              <span>{product.stock < 1 ? 'Out of stock' : adding ? 'Adding...' : 'Add to cart'}</span>
+              <span>{product.stock < 1 ? 'Out of stock' : adding ? 'BUYING...' : 'QUICK BUY'}</span>
             </button>
           </div>
         )}

@@ -85,7 +85,7 @@ export default function ProductDetails({ product: initialProduct, quantity, onQu
           </div>
 
           <button type="button" className="btn-primary" onClick={handleAddToCart} disabled={product.stock < 1}>
-            Add to cart
+            QUICK BUY
           </button>
         </div>
       </div>
