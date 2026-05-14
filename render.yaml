@@ -11,10 +11,6 @@ services:
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
-    disk:
-      name: hozoko-uploads
-      mountPath: uploads
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
