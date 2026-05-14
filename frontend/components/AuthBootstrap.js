@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchCurrentUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
+import { hydrateWishlist } from '@/redux/slices/wishlistSlice';
 
 export default function AuthBootstrap({ children }) {
   const dispatch = useDispatch();
@@ -18,8 +19,13 @@ export default function AuthBootstrap({ children }) {
 
     dispatch(fetchCurrentUser())
       .unwrap()
-      .then(() => dispatch(fetchCart()))
-      .catch(() => {});
+      .then((user) => {
+        dispatch(hydrateWishlist(user?._id || null));
+        return dispatch(fetchCart());
+      })
+      .catch(() => {
+        dispatch(hydrateWishlist(null));
+      });
   }, [dispatch]);
 
   return children;

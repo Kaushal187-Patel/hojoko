@@ -1,3 +1,10 @@
+export const formatUserAddress = (address) => {
+  if (!address) return '';
+
+  const parts = [address.street, address.city, address.zipCode, address.state, address.country].filter(Boolean);
+  return parts.join(', ');
+};
+
 export const formatCurrency = (amount) =>
   new Intl.NumberFormat('en-IN', {
     style: 'currency',

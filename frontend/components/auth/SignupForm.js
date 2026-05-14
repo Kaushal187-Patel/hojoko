@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import PasswordStrength from '@/components/PasswordStrength';
+import PasswordInput from '@/components/auth/PasswordInput';
 import { signupUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
 import { validatePasswordPair } from '@/utils/passwordValidation';
@@ -86,18 +87,14 @@ export default function SignupForm() {
         value={form.phone}
         onChange={(event) => setForm({ ...form, phone: event.target.value })}
       />
-      <input
-        className="input-field"
-        type="password"
+      <PasswordInput
         placeholder="Password"
         value={form.password}
         onChange={(event) => setForm({ ...form, password: event.target.value })}
         autoComplete="new-password"
         required
       />
-      <input
-        className="input-field"
-        type="password"
+      <PasswordInput
         placeholder="Re-enter password"
         value={form.confirmPassword}
         onChange={(event) => setForm({ ...form, confirmPassword: event.target.value })}

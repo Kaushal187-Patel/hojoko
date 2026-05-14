@@ -12,6 +12,16 @@ const ensureProductSlug = async (product) => {
   return product;
 };
 
+const sortProducts = { rank: 1, createdAt: 1 };
+
+const getSortOption = (sortKey) => {
+  if (!sortKey || sortKey === 'rank') {
+    return sortProducts;
+  }
+
+  return sortKey;
+};
+
 // @desc    Get all products with search, filter, pagination
 // @route   GET /api/products
 const getProducts = async (req, res, next) => {
@@ -33,13 +43,17 @@ const getProducts = async (req, res, next) => {
       }
     }
 
+    if (req.query.categoryId) {
+      query.category = req.query.categoryId;
+    }
+
     if (req.query.minPrice || req.query.maxPrice) {
       query.price = {};
       if (req.query.minPrice) query.price.$gte = Number(req.query.minPrice);
       if (req.query.maxPrice) query.price.$lte = Number(req.query.maxPrice);
     }
 
-    const sort = req.query.sort || '-createdAt';
+    const sort = getSortOption(req.query.sort);
 
     const [products, total] = await Promise.all([
       Product.find(query).populate('category', 'name slug').sort(sort).skip(skip).limit(limit),
@@ -129,8 +143,10 @@ const uploadProductImage = async (req, res, next) => {
 const createProduct = async (req, res, next) => {
   try {
     const { rating, numReviews, ...productData } = req.body;
+    const count = await Product.countDocuments({ isActive: true, category: productData.category });
     const product = await Product.create({
       ...productData,
+      rank: count,
       createdBy: req.user._id,
     });
 
@@ -145,14 +161,21 @@ const createProduct = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
   try {
     const { rating, numReviews, ...productData } = req.body;
+    const existing = await Product.findById(req.params.id);
+
+    if (!existing) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    if (productData.category && productData.category.toString() !== existing.category.toString()) {
+      const count = await Product.countDocuments({ isActive: true, category: productData.category });
+      productData.rank = count;
+    }
+
     const product = await Product.findByIdAndUpdate(req.params.id, productData, {
       new: true,
       runValidators: true,
-    });
-
-    if (!product) {
-      return res.status(404).json({ success: false, message: 'Product not found' });
-    }
+    }).populate('category', 'name slug');
 
     res.json({ success: true, product });
   } catch (error) {
@@ -170,7 +193,55 @@ const deleteProduct = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
+    const remaining = await Product.find({ isActive: true, category: product.category }).sort(sortProducts);
+    await Promise.all(remaining.map((item, index) => Product.findByIdAndUpdate(item._id, { rank: index })));
+
     res.json({ success: true, message: 'Product removed' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const reorderProduct = async (req, res, next) => {
+  try {
+    const { direction } = req.body;
+
+    if (!['up', 'down'].includes(direction)) {
+      return res.status(400).json({ success: false, message: 'Direction must be up or down' });
+    }
+
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    const products = await Product.find({ isActive: true, category: product.category }).sort(sortProducts);
+    const index = products.findIndex((item) => item._id.toString() === req.params.id);
+
+    if (index === -1) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+    if (targetIndex < 0 || targetIndex >= products.length) {
+      const unchanged = await Product.find({ isActive: true, category: product.category })
+        .populate('category', 'name slug')
+        .sort(sortProducts);
+      return res.json({ success: true, products: unchanged });
+    }
+
+    const reordered = [...products];
+    [reordered[index], reordered[targetIndex]] = [reordered[targetIndex], reordered[index]];
+
+    await Promise.all(reordered.map((item, itemIndex) => Product.findByIdAndUpdate(item._id, { rank: itemIndex })));
+
+    const productsResponse = await Product.find({ isActive: true, category: product.category })
+      .populate('category', 'name slug')
+      .sort(sortProducts);
+
+    res.json({ success: true, products: productsResponse });
   } catch (error) {
     next(error);
   }
@@ -184,4 +255,5 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  reorderProduct,
 };

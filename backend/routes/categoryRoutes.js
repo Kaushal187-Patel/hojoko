@@ -5,6 +5,7 @@ const {
   createCategory,
   updateCategory,
   deleteCategory,
+  reorderCategory,
 } = require('../controllers/categoryController');
 const { protect } = require('../middleware/auth');
 const { admin } = require('../middleware/admin');
@@ -16,6 +17,7 @@ router.get('/', getCategories);
 router.post('/upload', protect, admin, uploadCategory.single('image'), uploadCategoryImage);
 router.post('/', protect, admin, createCategory);
 router.put('/:id', protect, admin, updateCategory);
+router.patch('/:id/reorder', protect, admin, reorderCategory);
 router.delete('/:id', protect, admin, deleteCategory);
 
 module.exports = router;

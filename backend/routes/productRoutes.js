@@ -7,6 +7,7 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  reorderProduct,
 } = require('../controllers/productController');
 const { protect } = require('../middleware/auth');
 const { admin } = require('../middleware/admin');
@@ -17,6 +18,7 @@ const router = express.Router();
 router.get('/', getProducts);
 router.post('/upload', protect, admin, uploadProduct.single('image'), uploadProductImage);
 router.get('/by-slug/:categorySlug/:productSlug', getProductBySlug);
+router.patch('/:id/reorder', protect, admin, reorderProduct);
 router.get('/:id', getProductById);
 router.post('/', protect, admin, createProduct);
 router.put('/:id', protect, admin, updateProduct);

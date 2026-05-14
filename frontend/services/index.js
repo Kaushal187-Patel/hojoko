@@ -20,6 +20,7 @@ export const productService = {
   },
   create: (data) => api.post('/products', data),
   update: (id, data) => api.put(`/products/${id}`, data),
+  reorder: (id, direction) => api.patch(`/products/${id}/reorder`, { direction }),
   remove: (id) => api.delete(`/products/${id}`),
 };
 
@@ -70,5 +71,6 @@ export const categoryService = {
   },
   create: (data) => api.post('/categories', data),
   update: (id, data) => api.put(`/categories/${id}`, data),
+  reorder: (id, direction) => api.patch(`/categories/${id}/reorder`, { direction }),
   remove: (id) => api.delete(`/categories/${id}`),
 };

@@ -17,6 +17,11 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Description is required'],
     },
+    shortDescription: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     price: {
       type: Number,
       required: [true, 'Price is required'],
@@ -63,6 +68,10 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    rank: {
+      type: Number,
+      default: 0,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -71,7 +80,7 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.index({ name: 'text', description: 'text', brand: 'text' });
+productSchema.index({ name: 'text', description: 'text', shortDescription: 'text', brand: 'text' });
 productSchema.index({ slug: 1 });
 
 productSchema.pre('save', async function ensureSlug(next) {

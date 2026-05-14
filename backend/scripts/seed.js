@@ -52,6 +52,7 @@ const seed = async () => {
     password: ADMIN_PASSWORD,
     role: 'admin',
     phone: '9999999999',
+    isActive: true,
   });
 
   const user = await User.create({
@@ -79,18 +80,24 @@ const seed = async () => {
   const categories = await Category.insertMany([
     {
       name: 'Electronics',
+      slug: toSlug('Electronics'),
       description: 'Gadgets and devices',
       image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=800&q=80',
+      rank: 0,
     },
     {
       name: 'Fashion',
+      slug: toSlug('Fashion'),
       description: 'Clothing and accessories',
       image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=80',
+      rank: 1,
     },
     {
       name: 'Home',
+      slug: toSlug('Home'),
       description: 'Home and living essentials',
       image: 'https://images.unsplash.com/photo-1484101403633-562f891dc0a3?auto=format&fit=crop&w=800&q=80',
+      rank: 2,
     },
   ]);
 
@@ -98,7 +105,9 @@ const seed = async () => {
     {
       name: 'Wireless Headphones',
       slug: toSlug('Wireless Headphones'),
-      description: 'Noise-cancelling over-ear headphones with 30-hour battery life.',
+      shortDescription: '30-hour battery noise-cancelling headphones.',
+      description:
+        'Noise-cancelling over-ear headphones with 30-hour battery life, plush ear cushions, and balanced sound for travel and daily listening.',
       price: 4999,
       comparePrice: 6999,
       category: categories[0]._id,
@@ -118,7 +127,9 @@ const seed = async () => {
     {
       name: 'Minimalist Watch',
       slug: toSlug('Minimalist Watch'),
-      description: 'Stainless steel watch with sapphire glass and leather strap.',
+      shortDescription: 'Sapphire glass watch with leather strap.',
+      description:
+        'Stainless steel watch with sapphire glass and leather strap. Water-resistant case with a clean dial designed for everyday wear.',
       price: 3499,
       comparePrice: 4999,
       category: categories[1]._id,
@@ -137,7 +148,9 @@ const seed = async () => {
     {
       name: 'Ceramic Mug Set',
       slug: toSlug('Ceramic Mug Set'),
-      description: 'Set of four handcrafted ceramic mugs for everyday use.',
+      shortDescription: 'Handcrafted set of four ceramic mugs.',
+      description:
+        'Set of four handcrafted ceramic mugs for everyday use. Microwave-safe glaze with a comfortable handle and matte finish.',
       price: 1299,
       comparePrice: 1899,
       category: categories[2]._id,
@@ -149,7 +162,9 @@ const seed = async () => {
     {
       name: 'Smart Speaker',
       slug: toSlug('Smart Speaker'),
-      description: 'Voice assistant speaker with rich bass and smart home controls.',
+      shortDescription: 'Voice assistant speaker with rich bass.',
+      description:
+        'Voice assistant speaker with rich bass and smart home controls. Stream music, set reminders, and control compatible devices hands-free.',
       price: 5999,
       comparePrice: 7999,
       category: categories[0]._id,
@@ -161,7 +176,9 @@ const seed = async () => {
     {
       name: 'Linen Shirt',
       slug: toSlug('Linen Shirt'),
-      description: 'Breathable linen shirt for warm weather styling.',
+      shortDescription: 'Breathable linen shirt for warm days.',
+      description:
+        'Breathable linen shirt for warm weather styling. Relaxed fit with natural texture, soft hand-feel, and easy layering.',
       price: 2199,
       comparePrice: 3499,
       category: categories[1]._id,
@@ -174,7 +191,9 @@ const seed = async () => {
     {
       name: 'Scented Candle',
       slug: toSlug('Scented Candle'),
-      description: 'Soy wax candle with cedarwood and bergamot notes.',
+      shortDescription: 'Cedarwood and bergamot soy wax candle.',
+      description:
+        'Soy wax candle with cedarwood and bergamot notes. Clean burn with a warm, calming scent for living spaces and evening routines.',
       price: 899,
       category: categories[2]._id,
       stock: 30,

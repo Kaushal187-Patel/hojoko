@@ -56,7 +56,7 @@ function CategoryProductsContent() {
         )}
       </div>
 
-      <ProductListing categorySlug={slug} />
+      <ProductListing categorySlug={slug} showCategoryFilter={false} />
     </section>
   );
 }

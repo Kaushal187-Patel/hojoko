@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import ProductCard from '@/components/ProductCard';
 import AdminLayout from '@/components/ui/AdminLayout';
-import ProductGrid from '@/components/ui/ProductGrid';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { categoryService, productService } from '@/services';
+import { getProductImage } from '@/utils/helpers';
 
 const emptyProduct = {
   name: '',
+  shortDescription: '',
   description: '',
   price: '',
   comparePrice: '',
@@ -25,6 +25,7 @@ const toFormField = (value) => (value == null || value === '' ? '' : String(valu
 
 const productToForm = (product) => ({
   name: product.name ?? '',
+  shortDescription: product.shortDescription ?? '',
   description: product.description ?? '',
   price: toFormField(product.price),
   comparePrice: toFormField(product.comparePrice),
@@ -43,12 +44,13 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploadingIndex, setUploadingIndex] = useState(null);
+  const [filterCategory, setFilterCategory] = useState('');
 
-  const loadData = async () => {
+  const loadData = async (categorySlug = filterCategory) => {
     setLoading(true);
     try {
       const [productsRes, categoriesRes] = await Promise.all([
-        productService.getAll({ limit: 100 }),
+        productService.getAll({ limit: 100, category: categorySlug || undefined, sort: 'rank' }),
         categoryService.getAll(),
       ]);
       setProducts(productsRes.data.products);
@@ -59,8 +61,8 @@ export default function AdminProductsPage() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData(filterCategory);
+  }, [filterCategory]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -84,7 +86,7 @@ export default function AdminProductsPage() {
 
       setForm(createEmptyForm());
       setEditingId(null);
-      loadData();
+      loadData(filterCategory);
     } catch (error) {
       toast.error(error.message || 'Save failed');
     }
@@ -114,11 +116,20 @@ export default function AdminProductsPage() {
     }
   };
 
+  const handleReorder = async (id, direction) => {
+    try {
+      const { data } = await productService.reorder(id, direction);
+      setProducts(data.products || []);
+    } catch (error) {
+      toast.error(error.message || 'Could not reorder product');
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       await productService.remove(id);
       toast.success('Product deleted');
-      loadData();
+      loadData(filterCategory);
     } catch (error) {
       toast.error(error.message || 'Delete failed');
     }
@@ -130,7 +141,21 @@ export default function AdminProductsPage() {
 
 <form onSubmit={handleSubmit} className="card mt-8 grid gap-4 md:grid-cols-2">
             <input className="input-field md:col-span-2" placeholder="Name" value={form.name ?? ''} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-            <textarea className="input-field md:col-span-2" placeholder="Description" value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
+            <label className="field-label md:col-span-2">Short description (tag)</label>
+            <textarea
+              className="input-field min-h-24 md:col-span-2"
+              placeholder="Short tag shown outside the product on cards and listings"
+              value={form.shortDescription ?? ''}
+              onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
+            />
+            <label className="field-label md:col-span-2">Full description</label>
+            <textarea
+              className="input-field min-h-36 md:col-span-2"
+              placeholder="Full description shown on the product page"
+              value={form.description ?? ''}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              required
+            />
             <input className="input-field" type="number" placeholder="Selling price" value={form.price ?? ''} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
             <input className="input-field" type="number" placeholder="MRP (compare price)" value={form.comparePrice ?? ''} onChange={(e) => setForm({ ...form, comparePrice: e.target.value })} />
             <input className="input-field" type="number" placeholder="Stock" value={form.stock ?? ''} onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
@@ -226,20 +251,76 @@ export default function AdminProductsPage() {
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <div className="mt-8">
-              <p className="mb-4 text-sm text-slate-500">{products.length} products — preview matches storefront layout</p>
-              <ProductGrid>
-                {products.map((product, index) => (
-                  <ProductCard
-                    key={product._id}
-                    product={product}
-                    admin
-                    index={index}
-                    onEdit={() => handleEdit(product)}
-                    onDelete={() => handleDelete(product._id)}
-                  />
-                ))}
-              </ProductGrid>
+            <div className="mt-8 space-y-3">
+              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div className="max-w-sm">
+                  <label className="field-label" htmlFor="admin-product-category-filter">
+                    Filter by category
+                  </label>
+                  <select
+                    id="admin-product-category-filter"
+                    className="input-field mt-2"
+                    value={filterCategory}
+                    onChange={(event) => setFilterCategory(event.target.value)}
+                  >
+                    <option value="">All categories</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.slug}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <p className="text-sm text-stone-500">
+                  {filterCategory
+                    ? `${products.length} products — use arrows to set order in this category`
+                    : `${products.length} products — select a category to reorder`}
+                </p>
+              </div>
+
+              {products.map((product, index) => (
+                <div key={product._id} className="card flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-center gap-1">
+                      <button
+                        type="button"
+                        className="category-rank-btn"
+                        onClick={() => handleReorder(product._id, 'up')}
+                        disabled={!filterCategory || index === 0}
+                        aria-label={`Move ${product.name} up`}
+                      >
+                        ↑
+                      </button>
+                      <span className="category-rank-label">{index + 1}</span>
+                      <button
+                        type="button"
+                        className="category-rank-btn"
+                        onClick={() => handleReorder(product._id, 'down')}
+                        disabled={!filterCategory || index === products.length - 1}
+                        aria-label={`Move ${product.name} down`}
+                      >
+                        ↓
+                      </button>
+                    </div>
+                    <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-stone-100">
+                      <Image src={getProductImage(product)} alt={product.name} fill className="object-cover" sizes="64px" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">{product.name}</p>
+                      <p className="text-sm text-slate-500">{product.category?.name || 'No category'}</p>
+                      <p className="text-sm text-slate-500">{product.shortDescription || product.description || 'No description'}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button type="button" className="btn-secondary" onClick={() => handleEdit(product)}>
+                      Edit
+                    </button>
+                    <button type="button" className="btn-secondary text-red-600" onClick={() => handleDelete(product._id)}>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
       </AdminLayout>

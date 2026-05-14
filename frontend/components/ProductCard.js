@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import StarRating from '@/components/StarRating';
 import { addToCart } from '@/redux/slices/cartSlice';
+import { selectIsWishlisted, toggleWishlistItem } from '@/redux/slices/wishlistSlice';
 import { formatCurrency, formatReviewCount, getProductImage, getProductUrl } from '@/utils/helpers';
 
 export default function ProductCard({
@@ -23,7 +24,7 @@ export default function ProductCard({
   const pathname = usePathname();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const [wishlisted, setWishlisted] = useState(false);
+  const wishlisted = useSelector(selectIsWishlisted(product._id));
   const [heartPop, setHeartPop] = useState(false);
   const [adding, setAdding] = useState(false);
 
@@ -35,7 +36,7 @@ export default function ProductCard({
   const handleWishlist = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    setWishlisted((value) => !value);
+    dispatch(toggleWishlistItem(product));
     setHeartPop(true);
     window.setTimeout(() => setHeartPop(false), 400);
     toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist');
@@ -86,6 +87,10 @@ export default function ProductCard({
         <h3 className="product-card-title">
           <span className="uppercase">{brand}</span> {product.name}
         </h3>
+
+        {product.shortDescription ? (
+          <p className="product-card-description">{product.shortDescription}</p>
+        ) : null}
 
         {rating > 0 || reviewLabel ? (
           <StarRating rating={rating} reviewCount={reviewLabel} />

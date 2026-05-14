@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { loginUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
+import PasswordInput from '@/components/auth/PasswordInput';
 import { isAdminUser } from '@/utils/auth';
 import { SITE_TAGLINE } from '@/utils/brand';
 
@@ -48,17 +49,13 @@ export default function LoginForm() {
         onChange={(event) => setForm({ ...form, email: event.target.value })}
         required
       />
-      <input
-        className="input-field"
-        type="password"
+      <PasswordInput
         placeholder="Password"
         value={form.password}
         onChange={(event) => setForm({ ...form, password: event.target.value })}
         autoComplete="current-password"
         required
       />
-
-      <p className="text-xs text-stone-500">Secure sign-in uses JWT stored in an HTTP-only cookie.</p>
 
       <button type="submit" className="btn-primary w-full" disabled={loading}>
         {loading ? 'Signing in...' : 'Login'}

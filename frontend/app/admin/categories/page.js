@@ -91,6 +91,15 @@ export default function AdminCategoriesPage() {
     });
   };
 
+  const handleReorder = async (id, direction) => {
+    try {
+      const { data } = await categoryService.reorder(id, direction);
+      setCategories(data.categories || []);
+    } catch (error) {
+      toast.error(error.message || 'Could not reorder category');
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this category?')) return;
 
@@ -163,9 +172,31 @@ export default function AdminCategoriesPage() {
             <LoadingSpinner />
           ) : (
             <div className="mt-8 space-y-3">
-              {categories.map((category) => (
+              <p className="text-sm text-stone-500">Use the arrows to set category order in the header and home page.</p>
+              {categories.map((category, index) => (
                 <div key={category._id} className="card flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-center gap-1">
+                      <button
+                        type="button"
+                        className="category-rank-btn"
+                        onClick={() => handleReorder(category._id, 'up')}
+                        disabled={index === 0}
+                        aria-label={`Move ${category.name} up`}
+                      >
+                        ↑
+                      </button>
+                      <span className="category-rank-label">{index + 1}</span>
+                      <button
+                        type="button"
+                        className="category-rank-btn"
+                        onClick={() => handleReorder(category._id, 'down')}
+                        disabled={index === categories.length - 1}
+                        aria-label={`Move ${category.name} down`}
+                      >
+                        ↓
+                      </button>
+                    </div>
                     <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-stone-100">
                       <Image src={getCategoryImage(category)} alt={category.name} fill className="object-cover" sizes="64px" />
                     </div>

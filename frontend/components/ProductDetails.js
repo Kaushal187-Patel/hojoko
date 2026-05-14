@@ -68,8 +68,6 @@ export default function ProductDetails({ product: initialProduct, quantity, onQu
             </div>
           </div>
 
-          <p className="body-copy">{product.description}</p>
-
           <div className="flex items-center gap-4">
             <label className="field-label" htmlFor="quantity">
               Quantity
@@ -91,6 +89,25 @@ export default function ProductDetails({ product: initialProduct, quantity, onQu
           </button>
         </div>
       </div>
+
+      {product.shortDescription || product.description ? (
+        <section className="product-description-section">
+          <div className="container-page space-y-8 py-10">
+            {product.shortDescription ? (
+              <div>
+                <p className="eyebrow">Tag</p>
+                <p className="body-copy mt-3 max-w-3xl whitespace-pre-line">{product.shortDescription}</p>
+              </div>
+            ) : null}
+            {product.description ? (
+              <div>
+                <h2 className="section-title">Description</h2>
+                <p className="body-copy mt-4 max-w-3xl whitespace-pre-line">{product.description}</p>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       <ProductReviews productId={product._id} onRatingUpdate={handleRatingUpdate} />
     </>

@@ -19,7 +19,7 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" id="support">
       <div className="site-footer-grid">
         <div className="col-span-2 md:col-span-1">
           <Logo linked={false} />

@@ -25,14 +25,27 @@ const categorySchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    rank: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
 
 categorySchema.pre('save', function generateSlug(next) {
-  if (this.isModified('name')) {
+  if (this.isModified('name') || !this.slug) {
     this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   }
+  next();
+});
+
+categorySchema.pre('insertMany', function assignSlugs(next, docs) {
+  docs.forEach((doc) => {
+    if (!doc.slug && doc.name) {
+      doc.slug = doc.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+  });
   next();
 });
 

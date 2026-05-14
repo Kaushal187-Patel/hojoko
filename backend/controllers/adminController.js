@@ -52,14 +52,20 @@ const getUsers = async (req, res, next) => {
 // @route   PUT /api/admin/users/:id
 const updateUser = async (req, res, next) => {
   try {
+    const target = await User.findById(req.params.id);
+
+    if (!target) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (target.role === 'admin' && req.body.isActive === false) {
+      return res.status(400).json({ success: false, message: 'Admin accounts cannot be deactivated' });
+    }
+
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     }).select('-password');
-
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
 
     res.json({ success: true, user });
   } catch (error) {

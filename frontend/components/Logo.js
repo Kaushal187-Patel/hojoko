@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { cn } from '@/utils/cn';
 
-export default function Logo({ className = '', linked = true }) {
-  const content = <span className={cn('logo-text', className)}>HOZOKO</span>;
+export default function Logo({ className = '', linked = true, variant = 'dark' }) {
+  const content = (
+    <span className={cn('logo-text', variant === 'light' && 'logo-text-light', className)}>HOZOKO</span>
+  );
 
   if (!linked) {
     return content;
