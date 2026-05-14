@@ -6,7 +6,7 @@
     "styles": "node scripts/compose-globals.js",
     "dev": "npm run styles && next dev",
     "build": "npm run styles && next build",
-    "start": "next start",
+    "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
     "lint": "next lint"
   },
   "dependencies": {

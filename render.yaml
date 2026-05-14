@@ -1,8 +1,6 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
-# Deploy: Dashboard → Blueprints → New Blueprint Instance → connect this repo
 
 services:
-  # Express API (deploy backend first, then set CLIENT_URL after frontend is live)
   - type: web
     name: hozoko-api
     runtime: node
@@ -14,8 +12,6 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: JWT_EXPIRE
         value: 7d
       - key: CLIENT_URL
@@ -29,7 +25,6 @@ services:
       - key: RAZORPAY_KEY_SECRET
         sync: false
 
-  # Next.js storefront
   - type: web
     name: hozoko-web
     runtime: node
