@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   getProducts,
+  getProductBySlug,
   getProductById,
   uploadProductImage,
   createProduct,
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.get('/', getProducts);
 router.post('/upload', protect, admin, uploadProduct.single('image'), uploadProductImage);
+router.get('/by-slug/:categorySlug/:productSlug', getProductBySlug);
 router.get('/:id', getProductById);
 router.post('/', protect, admin, createProduct);
 router.put('/:id', protect, admin, updateProduct);

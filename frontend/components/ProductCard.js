@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatCurrency, getProductImage } from '@/utils/helpers';
+import { formatCurrency, getProductImage, getProductUrl } from '@/utils/helpers';
 
 export default function ProductCard({ product, priority = false, isNew = false }) {
   return (
-    <Link href={`/products/${product._id}`} className="group block">
+    <Link href={getProductUrl(product)} className="group block">
       <div className="image-portrait">
         <Image
           src={getProductImage(product)}

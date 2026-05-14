@@ -10,6 +10,7 @@ export const authService = {
 export const productService = {
   getAll: (params) => api.get('/products', { params }),
   getById: (id) => api.get(`/products/${id}`),
+  getBySlug: (categorySlug, productSlug) => api.get(`/products/by-slug/${categorySlug}/${productSlug}`),
   uploadImage: (file) => {
     const formData = new FormData();
     formData.append('image', file);

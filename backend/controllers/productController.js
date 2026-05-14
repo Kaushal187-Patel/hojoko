@@ -1,5 +1,16 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const { generateUniqueSlug } = require('../utils/slug');
+
+const ensureProductSlug = async (product) => {
+  if (!product || product.slug) {
+    return product;
+  }
+
+  product.slug = await generateUniqueSlug(Product, product.name, product._id);
+  await product.save();
+  return product;
+};
 
 // @desc    Get all products with search, filter, pagination
 // @route   GET /api/products
@@ -35,6 +46,15 @@ const getProducts = async (req, res, next) => {
       Product.countDocuments(query),
     ]);
 
+    await Promise.all(
+      products
+        .filter((product) => !product.slug)
+        .map(async (product) => {
+          product.slug = await generateUniqueSlug(Product, product.name, product._id);
+          await product.save();
+        })
+    );
+
     res.json({
       success: true,
       products,
@@ -47,15 +67,43 @@ const getProducts = async (req, res, next) => {
   }
 };
 
+// @desc    Get single product by category slug and product slug
+// @route   GET /api/products/by-slug/:categorySlug/:productSlug
+const getProductBySlug = async (req, res, next) => {
+  try {
+    const category = await Category.findOne({ slug: req.params.categorySlug, isActive: true });
+
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    const product = await Product.findOne({
+      slug: req.params.productSlug,
+      category: category._id,
+      isActive: true,
+    }).populate('category', 'name slug');
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    res.json({ success: true, product });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get single product
 // @route   GET /api/products/:id
 const getProductById = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id).populate('category', 'name slug');
+    let product = await Product.findById(req.params.id).populate('category', 'name slug');
 
     if (!product || !product.isActive) {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
+
+    product = await ensureProductSlug(product);
 
     res.json({ success: true, product });
   } catch (error) {
@@ -128,6 +176,7 @@ const deleteProduct = async (req, res, next) => {
 
 module.exports = {
   getProducts,
+  getProductBySlug,
   getProductById,
   uploadProductImage,
   createProduct,

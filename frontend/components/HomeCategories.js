@@ -21,7 +21,7 @@ export default function HomeCategories({ categories = [] }) {
 
       <div className="category-grid">
         {categories.map((category) => (
-          <Link key={category._id} href={`/products?category=${category.slug}`} className="group surface-tile">
+          <Link key={category._id} href={`/categories/${category.slug}`} className="group surface-tile">
             <div className="image-square">
               <Image
                 src={getCategoryImage(category)}

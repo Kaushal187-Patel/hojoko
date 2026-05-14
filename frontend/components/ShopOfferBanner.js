@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { formatCurrency, getProductImage } from '@/utils/helpers';
+import { formatCurrency, getProductImage, getProductUrl } from '@/utils/helpers';
 
 export default function ShopOfferBanner({ products = [] }) {
   const offerProducts = products.slice(0, 4);
@@ -17,7 +17,7 @@ export default function ShopOfferBanner({ products = [] }) {
           {offerProducts.map((product) => (
             <Link
               key={product._id}
-              href={`/products/${product._id}`}
+              href={getProductUrl(product)}
               className="shop-offer-tile group"
               title={product.name}
             >

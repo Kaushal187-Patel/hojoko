@@ -1,10 +1,16 @@
 const mongoose = require('mongoose');
+const { generateUniqueSlug } = require('../utils/slug');
 
 const productSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, 'Product name is required'],
+      trim: true,
+    },
+    slug: {
+      type: String,
+      lowercase: true,
       trim: true,
     },
     description: {
@@ -66,5 +72,19 @@ const productSchema = new mongoose.Schema(
 );
 
 productSchema.index({ name: 'text', description: 'text', brand: 'text' });
+productSchema.index({ slug: 1 });
+
+productSchema.pre('save', async function ensureSlug(next) {
+  if (!this.isModified('name') && this.slug) {
+    return next();
+  }
+
+  try {
+    this.slug = await generateUniqueSlug(this.constructor, this.name, this._id);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = mongoose.model('Product', productSchema);

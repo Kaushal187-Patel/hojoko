@@ -21,6 +21,21 @@ export const getCategoryImage = (category) => {
   return 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80';
 };
 
+export const getProductUrl = (product) => {
+  const categorySlug = product?.category?.slug;
+  const productSlug = product?.slug;
+
+  if (categorySlug && productSlug) {
+    return `/categories/${categorySlug}/${productSlug}`;
+  }
+
+  if (product?._id) {
+    return `/products/${product._id}`;
+  }
+
+  return '/products';
+};
+
 export const loadRazorpayScript = () =>
   new Promise((resolve) => {
     if (typeof window === 'undefined') {

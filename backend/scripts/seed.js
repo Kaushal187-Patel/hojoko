@@ -3,6 +3,7 @@ const connectDB = require('../config/db');
 const User = require('../models/User');
 const Category = require('../models/Category');
 const Product = require('../models/Product');
+const { toSlug } = require('../utils/slug');
 const Order = require('../models/Order');
 const Payment = require('../models/Payment');
 const Cart = require('../models/Cart');
@@ -96,6 +97,7 @@ const seed = async () => {
   const products = await Product.insertMany([
     {
       name: 'Wireless Headphones',
+      slug: toSlug('Wireless Headphones'),
       description: 'Noise-cancelling over-ear headphones with 30-hour battery life.',
       price: 4999,
       comparePrice: 6999,
@@ -115,6 +117,7 @@ const seed = async () => {
     },
     {
       name: 'Minimalist Watch',
+      slug: toSlug('Minimalist Watch'),
       description: 'Stainless steel watch with sapphire glass and leather strap.',
       price: 3499,
       category: categories[1]._id,
@@ -132,6 +135,7 @@ const seed = async () => {
     },
     {
       name: 'Ceramic Mug Set',
+      slug: toSlug('Ceramic Mug Set'),
       description: 'Set of four handcrafted ceramic mugs for everyday use.',
       price: 1299,
       category: categories[2]._id,
@@ -142,6 +146,7 @@ const seed = async () => {
     },
     {
       name: 'Smart Speaker',
+      slug: toSlug('Smart Speaker'),
       description: 'Voice assistant speaker with rich bass and smart home controls.',
       price: 5999,
       category: categories[0]._id,
@@ -152,6 +157,7 @@ const seed = async () => {
     },
     {
       name: 'Linen Shirt',
+      slug: toSlug('Linen Shirt'),
       description: 'Breathable linen shirt for warm weather styling.',
       price: 2199,
       category: categories[1]._id,
@@ -163,6 +169,7 @@ const seed = async () => {
     },
     {
       name: 'Scented Candle',
+      slug: toSlug('Scented Candle'),
       description: 'Soy wax candle with cedarwood and bergamot notes.',
       price: 899,
       category: categories[2]._id,
