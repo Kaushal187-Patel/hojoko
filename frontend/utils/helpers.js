@@ -5,6 +5,15 @@ export const formatCurrency = (amount) =>
     maximumFractionDigits: 0,
   }).format(amount || 0);
 
+export const formatReviewCount = (count) => {
+  if (!count || count < 1) return '';
+  if (count >= 1000) {
+    const value = count / 1000;
+    return `${value % 1 === 0 ? value.toFixed(0) : value.toFixed(1)}k`;
+  }
+  return String(count);
+};
+
 export const getProductImage = (product) => {
   if (product?.images?.length) return product.images[0];
   return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80';

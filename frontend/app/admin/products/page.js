@@ -4,25 +4,42 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import ProductCard from '@/components/ProductCard';
 import AdminLayout from '@/components/ui/AdminLayout';
+import ProductGrid from '@/components/ui/ProductGrid';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { categoryService, productService } from '@/services';
-import { formatCurrency } from '@/utils/helpers';
 
 const emptyProduct = {
   name: '',
   description: '',
   price: '',
+  comparePrice: '',
   stock: '',
   brand: '',
   category: '',
   images: [''],
 };
 
+const toFormField = (value) => (value == null || value === '' ? '' : String(value));
+
+const productToForm = (product) => ({
+  name: product.name ?? '',
+  description: product.description ?? '',
+  price: toFormField(product.price),
+  comparePrice: toFormField(product.comparePrice),
+  stock: toFormField(product.stock),
+  brand: product.brand ?? '',
+  category: product.category?._id || product.category || '',
+  images: product.images?.length ? [...product.images] : [''],
+});
+
+const createEmptyForm = () => ({ ...emptyProduct, images: [''] });
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState(emptyProduct);
+  const [form, setForm] = useState(createEmptyForm);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploadingIndex, setUploadingIndex] = useState(null);
@@ -51,6 +68,7 @@ export default function AdminProductsPage() {
     const payload = {
       ...form,
       price: Number(form.price),
+      comparePrice: form.comparePrice ? Number(form.comparePrice) : undefined,
       stock: Number(form.stock),
       images: form.images.filter(Boolean),
     };
@@ -64,7 +82,7 @@ export default function AdminProductsPage() {
         toast.success('Product created');
       }
 
-      setForm(emptyProduct);
+      setForm(createEmptyForm());
       setEditingId(null);
       loadData();
     } catch (error) {
@@ -74,15 +92,7 @@ export default function AdminProductsPage() {
 
   const handleEdit = (product) => {
     setEditingId(product._id);
-    setForm({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      stock: product.stock,
-      brand: product.brand || '',
-      category: product.category?._id || product.category,
-      images: product.images?.length ? product.images : [''],
-    });
+    setForm(productToForm(product));
   };
 
   const handleImageUpload = async (event, index) => {
@@ -119,12 +129,13 @@ export default function AdminProductsPage() {
       <AdminLayout title="Manage products">
 
 <form onSubmit={handleSubmit} className="card mt-8 grid gap-4 md:grid-cols-2">
-            <input className="input-field md:col-span-2" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-            <textarea className="input-field md:col-span-2" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
-            <input className="input-field" type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
-            <input className="input-field" type="number" placeholder="Stock" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
-            <input className="input-field" placeholder="Brand" value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} />
-            <select className="input-field" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required>
+            <input className="input-field md:col-span-2" placeholder="Name" value={form.name ?? ''} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+            <textarea className="input-field md:col-span-2" placeholder="Description" value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
+            <input className="input-field" type="number" placeholder="Selling price" value={form.price ?? ''} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
+            <input className="input-field" type="number" placeholder="MRP (compare price)" value={form.comparePrice ?? ''} onChange={(e) => setForm({ ...form, comparePrice: e.target.value })} />
+            <input className="input-field" type="number" placeholder="Stock" value={form.stock ?? ''} onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
+            <input className="input-field" placeholder="Brand" value={form.brand ?? ''} onChange={(e) => setForm({ ...form, brand: e.target.value })} />
+            <select className="input-field" value={form.category ?? ''} onChange={(e) => setForm({ ...form, category: e.target.value })} required>
               <option value="">Select category</option>
               {categories.map((category) => (
                 <option key={category._id} value={category._id}>
@@ -132,6 +143,9 @@ export default function AdminProductsPage() {
                 </option>
               ))}
             </select>
+            <p className="md:col-span-2 text-sm text-slate-500">
+              Product rating and review count are calculated automatically from live customer feedback.
+            </p>
             <div className="md:col-span-2 space-y-3">
               <p className="text-sm font-medium text-slate-700">Product images</p>
               <p className="text-sm text-slate-500">Paste an image URL or upload a file for each slot.</p>
@@ -151,7 +165,7 @@ export default function AdminProductsPage() {
                       <input
                         className="input-field"
                         placeholder={`Image URL ${index + 1}`}
-                        value={image}
+                        value={image ?? ''}
                         onChange={(event) => {
                           const nextImages = [...form.images];
                           nextImages[index] = event.target.value;
@@ -212,25 +226,20 @@ export default function AdminProductsPage() {
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <div className="mt-8 space-y-3">
-              {products.map((product) => (
-                <div key={product._id} className="card flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="font-semibold">{product.name}</p>
-                    <p className="text-sm text-slate-500">
-                      {formatCurrency(product.price)} • {product.stock} in stock
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button type="button" className="btn-secondary" onClick={() => handleEdit(product)}>
-                      Edit
-                    </button>
-                    <button type="button" className="btn-secondary text-red-600" onClick={() => handleDelete(product._id)}>
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <div className="mt-8">
+              <p className="mb-4 text-sm text-slate-500">{products.length} products — preview matches storefront layout</p>
+              <ProductGrid>
+                {products.map((product, index) => (
+                  <ProductCard
+                    key={product._id}
+                    product={product}
+                    admin
+                    index={index}
+                    onEdit={() => handleEdit(product)}
+                    onDelete={() => handleDelete(product._id)}
+                  />
+                ))}
+              </ProductGrid>
             </div>
           )}
       </AdminLayout>

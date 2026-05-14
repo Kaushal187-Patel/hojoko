@@ -51,7 +51,7 @@ export default function ProductListing({ categorySlug = '' }) {
   return (
     <ProductGrid>
       {products.map((product, index) => (
-        <ProductCard key={product._id} product={product} priority={index < 4} />
+        <ProductCard key={product._id} product={product} priority={index < 4} index={index} />
       ))}
     </ProductGrid>
   );

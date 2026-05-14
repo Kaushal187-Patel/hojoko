@@ -51,6 +51,14 @@ export const adminService = {
   getPayments: () => api.get('/admin/payments'),
 };
 
+export const reviewService = {
+  getByProduct: (productId, params) => api.get(`/reviews/product/${productId}`, { params }),
+  getEligibility: (productId) => api.get(`/reviews/eligibility/${productId}`),
+  create: (data) => api.post('/reviews', data),
+  update: (id, data) => api.put(`/reviews/${id}`, data),
+  remove: (id) => api.delete(`/reviews/${id}`),
+};
+
 export const categoryService = {
   getAll: () => api.get('/categories'),
   uploadImage: (file) => {

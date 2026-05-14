@@ -32,11 +32,22 @@ module.exports = {
       },
       animation: {
         marquee: 'marquee 28s linear infinite',
+        'fade-up': 'fadeUp 0.55s ease-out both',
+        'heart-pop': 'heartPop 0.4s ease-out',
       },
       keyframes: {
         marquee: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
+        },
+        fadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(16px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        heartPop: {
+          '0%': { transform: 'scale(1)' },
+          '40%': { transform: 'scale(1.3)' },
+          '100%': { transform: 'scale(1)' },
         },
       },
     },

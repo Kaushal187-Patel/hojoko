@@ -128,8 +128,9 @@ const uploadProductImage = async (req, res, next) => {
 // @route   POST /api/products
 const createProduct = async (req, res, next) => {
   try {
+    const { rating, numReviews, ...productData } = req.body;
     const product = await Product.create({
-      ...req.body,
+      ...productData,
       createdBy: req.user._id,
     });
 
@@ -143,7 +144,8 @@ const createProduct = async (req, res, next) => {
 // @route   PUT /api/products/:id
 const updateProduct = async (req, res, next) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const { rating, numReviews, ...productData } = req.body;
+    const product = await Product.findByIdAndUpdate(req.params.id, productData, {
       new: true,
       runValidators: true,
     });

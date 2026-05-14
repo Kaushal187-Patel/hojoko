@@ -23,7 +23,7 @@ export default function FeaturedProducts({ products = [] }) {
       ) : (
         <ProductGrid>
           {products.map((product, index) => (
-            <ProductCard key={product._id} product={product} priority={index < 4} isNew={index < 4} />
+            <ProductCard key={product._id} product={product} priority={index < 4} isNew={index < 4} index={index} />
           ))}
         </ProductGrid>
       )}

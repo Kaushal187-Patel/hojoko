@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { orderService } from '@/services';
@@ -43,10 +44,17 @@ export default function OrdersPage() {
                     </p>
                   </div>
                 </div>
-                <ul className="mt-4 space-y-2 border-t border-slate-100 pt-4 text-sm text-slate-600">
+                <ul className="mt-4 space-y-3 border-t border-slate-100 pt-4 text-sm text-slate-600">
                   {order.orderItems.map((item) => (
-                    <li key={`${order._id}-${item.product}`}>
-                      {item.name} x {item.quantity}
+                    <li key={`${order._id}-${item.product}`} className="flex flex-wrap items-center justify-between gap-2">
+                      <span>
+                        {item.name} x {item.quantity}
+                      </span>
+                      {order.isPaid ? (
+                        <Link href={`/products/${item.product}#reviews`} className="nav-link text-[10px]">
+                          Write a review
+                        </Link>
+                      ) : null}
                     </li>
                   ))}
                 </ul>
