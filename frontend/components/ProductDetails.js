@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import ProductImageGallery from '@/components/ProductImageGallery';
 import ProductReviews from '@/components/ProductReviews';
 import StarRating from '@/components/StarRating';
-import { addToCart } from '@/redux/slices/cartSlice';
+import { addToCart, openCartDrawer } from '@/redux/slices/cartSlice';
 import { formatCurrency, formatReviewCount } from '@/utils/helpers';
 
 export default function ProductDetails({ product: initialProduct, quantity, onQuantityChange }) {
@@ -26,7 +26,7 @@ export default function ProductDetails({ product: initialProduct, quantity, onQu
     const result = await dispatch(addToCart({ productId: product._id, quantity }));
 
     if (addToCart.fulfilled.match(result)) {
-      toast.success('Added to cart');
+      dispatch(openCartDrawer());
       return;
     }
 

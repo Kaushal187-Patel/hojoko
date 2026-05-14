@@ -95,6 +95,7 @@ export default function AdminProductsPage() {
   const handleEdit = (product) => {
     setEditingId(product._id);
     setForm(productToForm(product));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleImageUpload = async (event, index) => {
@@ -139,7 +140,7 @@ export default function AdminProductsPage() {
     <ProtectedRoute adminOnly>
       <AdminLayout title="Manage products">
 
-<form onSubmit={handleSubmit} className="card mt-8 grid gap-4 md:grid-cols-2">
+<form id="product-form" onSubmit={handleSubmit} className="card mt-8 grid gap-4 md:grid-cols-2">
             <input className="input-field md:col-span-2" placeholder="Name" value={form.name ?? ''} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             <label className="field-label md:col-span-2">Short description (tag)</label>
             <textarea

@@ -1,63 +1,66 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { getProductImages } from '@/utils/helpers';
 import { cn } from '@/utils/cn';
 
+const AUTO_SCROLL_MS = 3500;
+
 export default function ProductImageGallery({ product, name }) {
   const images = getProductImages(product);
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeImage = images[activeIndex] || images[0];
-  const gridImages = images.slice(1);
-  const visibleGridImages = gridImages.slice(0, 4);
-  const hiddenCount = Math.max(gridImages.length - 4, 0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (images.length <= 1 || paused) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % images.length);
+    }, AUTO_SCROLL_MS);
+
+    return () => window.clearInterval(timer);
+  }, [images.length, paused]);
 
   return (
-    <div className="space-y-4">
-      <div className="image-portrait">
-        <Image
-          src={activeImage}
-          alt={name}
-          fill
-          priority
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          className="image-cover"
-        />
+    <div
+      className="product-gallery-carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
+      <div className="image-portrait product-gallery-stage">
+        {images.map((image, index) => (
+          <Image
+            key={`${image}-${index}`}
+            src={image}
+            alt={`${name} view ${index + 1}`}
+            fill
+            priority={index === 0}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className={cn('image-cover product-gallery-slide', index === activeIndex && 'is-active')}
+          />
+        ))}
       </div>
 
-      {gridImages.length > 0 && (
-        <div className="thumbnail-grid">
-          {visibleGridImages.map((image, index) => {
-            const imageIndex = index + 1;
-            const isLastTile = index === 3 && hiddenCount > 0;
-            const isActive = activeIndex === imageIndex;
-
-            return (
-              <button
-                key={`${image}-${imageIndex}`}
-                type="button"
-                onClick={() => setActiveIndex(imageIndex)}
-                className={cn('image-thumb', isActive && 'image-thumb-active')}
-                aria-label={isLastTile ? `Show ${hiddenCount} more images` : `Show image ${imageIndex + 1}`}
-              >
-                <Image
-                  src={image}
-                  alt={`${name} view ${imageIndex + 1}`}
-                  fill
-                  sizes="25vw"
-                  className={cn('image-cover', isLastTile && 'thumb-dimmed')}
-                />
-                {isLastTile && (
-                  <span className="overlay-dark">
-                    +{hiddenCount}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+      {images.length > 1 ? (
+        <div className="product-gallery-dots" role="tablist" aria-label="Product images">
+          {images.map((image, index) => (
+            <button
+              key={`dot-${image}-${index}`}
+              type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-label={`Show image ${index + 1}`}
+              className={cn('product-gallery-dot', index === activeIndex && 'is-active')}
+              onClick={() => setActiveIndex(index)}
+            />
+          ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

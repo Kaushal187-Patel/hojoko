@@ -27,7 +27,7 @@ export default function HomeCategories({ categories = [] }) {
                 src={getCategoryImage(category)}
                 alt={category.name}
                 fill
-                sizes="(max-width: 640px) 50vw, 25vw"
+                sizes="(max-width: 640px) 25vw, 25vw"
                 className="image-cover-zoom"
               />
             </div>

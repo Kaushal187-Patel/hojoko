@@ -81,6 +81,23 @@ function CartIcon() {
   );
 }
 
+function MenuIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6" aria-hidden>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function LocationIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden>
+      <path d="M12 21s7-4.5 7-11a7 7 0 10-14 0c0 6.5 7 11 7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
 function HeaderIconAction({ href, onClick, label, icon, badge, scroll = true, className }) {
   const actionClass = cn('header-icon-action', className);
 
@@ -162,7 +179,69 @@ export default function Navbar() {
 
   return (
     <header className="site-header">
-      <div className="site-header-top">
+      <div className="site-header-mobile md:hidden">
+        <Link href="/categories" className="header-menu-btn" aria-label="Open categories">
+          <MenuIcon />
+        </Link>
+        <Logo />
+        <div className="header-mobile-icons">
+          {user ? (
+            <HeaderIconAction href={accountHref} label="Account" icon={<ProfileIcon />} className="header-icon-compact" />
+          ) : (
+            <HeaderIconAction href={signInHref} label="Sign In" icon={<ProfileIcon />} scroll={false} className="header-icon-compact" />
+          )}
+          <HeaderIconAction
+            href="/wishlist"
+            label="Wishlist"
+            icon={<WishlistIcon />}
+            className="header-icon-compact"
+            badge={wishlistCount > 0 ? <span className="cart-badge">{wishlistCount}</span> : null}
+          />
+          <HeaderIconAction
+            href="/cart"
+            label="Cart"
+            icon={<CartIcon />}
+            className="header-icon-compact"
+            badge={cartCount > 0 ? <span className="cart-badge">{cartCount}</span> : null}
+          />
+        </div>
+      </div>
+
+      <form className="site-header-mobile-search md:hidden" onSubmit={handleSearch} role="search">
+        <SearchIcon />
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder='Search for ""'
+          className="site-header-search-input"
+          aria-label="Search products"
+        />
+      </form>
+
+      <div className="site-header-mobile-delivery md:hidden">
+        <LocationIcon />
+        <span className="site-header-mobile-delivery-text">
+          Delivery to{' '}
+          {user ? (
+            deliveryAddress ? (
+              <Link href="/profile" className="site-header-delivery-link">
+                {deliveryAddress}
+              </Link>
+            ) : (
+              <Link href="/profile" className="site-header-delivery-link">
+                Add your address
+              </Link>
+            )
+          ) : (
+            <Link href={signInHref} className="site-header-delivery-link" scroll={false}>
+              Sign in to set address
+            </Link>
+          )}
+        </span>
+      </div>
+
+      <div className="site-header-top hidden md:flex">
         <Logo />
 
         <form className="site-header-search" onSubmit={handleSearch} role="search">
@@ -204,7 +283,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className="site-header-bottom">
+      <div className="site-header-bottom hidden md:block">
         <nav className="site-header-nav" aria-label="Main">
           <div className="site-header-nav-links">
             {categories.map((category) => (

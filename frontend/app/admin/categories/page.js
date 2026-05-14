@@ -89,6 +89,7 @@ export default function AdminCategoriesPage() {
       description: category.description || '',
       image: category.image || '',
     });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleReorder = async (id, direction) => {
