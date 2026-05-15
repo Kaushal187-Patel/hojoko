@@ -2,9 +2,6 @@
 const nextConfig = {
   compress: true,
   poweredByHeader: false,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
