@@ -10,16 +10,16 @@ const footerLinks = {
     { href: '/profile', label: 'Profile' },
   ],
   Support: [
-    { href: '/checkout', label: 'Checkout' },
+    { href: '/support', label: 'Help center' },
+    { href: '/orders', label: 'Track order' },
     { href: '/cart', label: 'Cart' },
     { href: '?auth=login', label: 'Sign in' },
-    { href: '?auth=signup', label: 'Create account' },
   ],
 };
 
 export default function Footer() {
   return (
-    <footer className="site-footer" id="support">
+    <footer className="site-footer">
       <div className="site-footer-grid">
         <div className="col-span-2 md:col-span-1">
           <Logo linked={false} />

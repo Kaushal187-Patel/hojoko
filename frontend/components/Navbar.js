@@ -267,7 +267,7 @@ export default function Navbar() {
           )}
 
           <HeaderIconAction href="/products" label="My Store" icon={<StoreIcon />} />
-          <HeaderIconAction href="/#support" label="Support" icon={<SupportIcon />} />
+          <HeaderIconAction href="/support" label="Support" icon={<SupportIcon />} />
           <HeaderIconAction
             href="/wishlist"
             label="Wishlist"
