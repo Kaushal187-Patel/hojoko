@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { categoryService } from '@/services';
 import { getCategoryImage } from '@/utils/helpers';
+import PageBackButton from '@/components/PageBackButton';
 import { cn } from '@/utils/cn';
 
 function CategoryTile({ category }) {
@@ -20,7 +20,6 @@ function CategoryTile({ category }) {
 }
 
 export default function CategoriesBrowse() {
-  const router = useRouter();
   const [categories, setCategories] = useState([]);
   const [activeId, setActiveId] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -38,9 +37,7 @@ export default function CategoriesBrowse() {
   return (
     <div className="categories-browse">
       <div className="categories-browse-header">
-        <button type="button" className="categories-browse-back" onClick={() => router.back()} aria-label="Go back">
-          ←
-        </button>
+        <PageBackButton />
         <h1 className="categories-browse-title">Categories</h1>
       </div>
 

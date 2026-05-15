@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ProductListing from '@/components/ProductListing';
 import { categoryService } from '@/services';
@@ -40,16 +39,13 @@ function CategoryProductsContent() {
   }, [slug]);
 
   return (
-    <section className="container-page py-10">
-      <div className="mb-8">
-        <Link href="/products" className="nav-link text-sm">
-          All products
-        </Link>
+    <section className="container-page pb-10 pt-2">
+      <div className="mb-6">
         {loadingCategory ? (
-          <div className="mt-4 h-8 w-48 animate-pulse rounded bg-stone-200" />
+          <div className="h-8 w-48 animate-pulse rounded bg-stone-200" />
         ) : (
           <>
-            <p className="eyebrow mt-4">Category</p>
+            <p className="eyebrow">Category</p>
             <h1 className="section-title mt-2">{category?.name || 'Collection'}</h1>
             {category?.description && <p className="body-muted mt-3 max-w-2xl">{category.description}</p>}
           </>

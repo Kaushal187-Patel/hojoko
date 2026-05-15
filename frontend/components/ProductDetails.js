@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import PageBackButton from '@/components/PageBackButton';
 import ProductImageGallery from '@/components/ProductImageGallery';
 import ProductReviews from '@/components/ProductReviews';
 import StarRating from '@/components/StarRating';
@@ -42,8 +43,11 @@ export default function ProductDetails({ product: initialProduct, quantity, onQu
 
   return (
     <>
-      <div className="container-page grid gap-10 py-12 lg:grid-cols-2">
-        <ProductImageGallery product={product} name={product.name} />
+      <div className="container-page grid gap-6 pb-12 pt-1 lg:grid-cols-2 lg:gap-10 lg:pt-6">
+        <div className="product-detail-gallery-col">
+          <PageBackButton />
+          <ProductImageGallery product={product} name={product.name} />
+        </div>
 
         <div className="space-y-6">
           <div>
