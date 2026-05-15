@@ -74,3 +74,19 @@ export const categoryService = {
   reorder: (id, direction) => api.patch(`/categories/${id}/reorder`, { direction }),
   remove: (id) => api.delete(`/categories/${id}`),
 };
+
+export const heroService = {
+  getAll: () => api.get('/hero'),
+  getAdmin: () => api.get('/hero/admin'),
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return api.post('/hero/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  create: (data) => api.post('/hero', data),
+  update: (id, data) => api.put(`/hero/${id}`, data),
+  reorder: (id, direction) => api.patch(`/hero/${id}/reorder`, { direction }),
+  remove: (id) => api.delete(`/hero/${id}`),
+};

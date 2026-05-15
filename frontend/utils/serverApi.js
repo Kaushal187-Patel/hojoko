@@ -17,6 +17,23 @@ export async function getFeaturedProducts(limit = 8) {
   }
 }
 
+export async function getHeroSlides() {
+  try {
+    const response = await fetch(`${API_URL}/hero`, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+    return data.slides || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function getCategories() {
   try {
     const response = await fetch(`${API_URL}/categories`, {

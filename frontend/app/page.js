@@ -1,13 +1,13 @@
 import HomeCategories from '@/components/HomeCategories';
 import HomeHero from '@/components/HomeHero';
-import { getCategories } from '@/utils/serverApi';
+import { getCategories, getHeroSlides } from '@/utils/serverApi';
 
 export default async function HomePage() {
-  const categories = await getCategories();
+  const [categories, heroSlides] = await Promise.all([getCategories(), getHeroSlides()]);
 
   return (
     <>
-      <HomeHero />
+      <HomeHero slides={heroSlides} />
       <HomeCategories categories={categories} />
       <section className="promo-band">
         <div className="promo-grid">

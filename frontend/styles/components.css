@@ -42,6 +42,47 @@
     @apply font-serif text-4xl leading-[1.08] sm:text-5xl md:text-6xl;
   }
 
+  /* Home hero — auto-scrolling offer slides */
+  .home-hero {
+    @apply relative min-h-[80vh] overflow-hidden bg-stone-900;
+  }
+
+  .home-hero-slides {
+    @apply absolute inset-0;
+  }
+
+  .home-hero-slide {
+    @apply opacity-0 transition-opacity duration-1000 ease-in-out;
+  }
+
+  .home-hero-slide.is-active {
+    @apply opacity-100;
+  }
+
+  .home-hero-overlay {
+    @apply absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/20 to-black/5 md:bg-gradient-to-r md:from-black/55 md:via-black/25 md:to-transparent;
+  }
+
+  .home-hero-content {
+    @apply relative z-10 flex min-h-[80vh] items-end pb-14 pt-28 md:items-center md:pb-20;
+  }
+
+  .home-hero-dots {
+    @apply absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 md:bottom-8;
+  }
+
+  .home-hero-dot {
+    @apply h-2 w-2 rounded-full bg-white/40 transition hover:bg-white/70;
+  }
+
+  .home-hero-dot.is-active {
+    @apply w-7 bg-white;
+  }
+
+  .admin-hero-preview {
+    @apply relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-stone-200 bg-stone-100;
+  }
+
   .product-detail-title {
     @apply font-serif text-5xl leading-tight text-ink;
   }

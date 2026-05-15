@@ -37,6 +37,11 @@ export const getCategoryImage = (category) => {
   return 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80';
 };
 
+export const getHeroSlideImage = (slide) => {
+  if (slide?.image) return slide.image;
+  return 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=2000&q=80';
+};
+
 export const getProductUrl = (product) => {
   const categorySlug = product?.category?.slug;
   const productSlug = product?.slug;

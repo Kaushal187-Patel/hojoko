@@ -1,33 +1,92 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SITE_TAGLINE } from '@/utils/brand';
+import { cn } from '@/utils/cn';
+import { getHeroSlideImage } from '@/utils/helpers';
 
-export default function HomeHero() {
+const AUTO_SCROLL_MS = 4000;
+
+const FALLBACK_SLIDES = [
+  {
+    _id: 'fallback-1',
+    image: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=2000&q=80',
+    alt: 'HOZOKO special offer',
+  },
+];
+
+export default function HomeHero({ slides: initialSlides = [] }) {
+  const slides = initialSlides.length ? initialSlides : FALLBACK_SLIDES;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [slides.length]);
+
+  useEffect(() => {
+    if (slides.length <= 1 || paused) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % slides.length);
+    }, AUTO_SCROLL_MS);
+
+    return () => window.clearInterval(timer);
+  }, [slides.length, paused]);
+
   return (
-    <section className="relative min-h-[72vh] overflow-hidden bg-stone-100">
-      <Image
-        src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1800&q=80"
-        alt="HOZOKO seasonal collection"
-        fill
-        priority
-        sizes="100vw"
-        className="image-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent md:bg-gradient-to-r md:from-black/55 md:via-black/25 md:to-transparent" />
-      <div className="container-page absolute inset-0 flex items-end pb-14 pt-28 md:items-center md:pb-20">
+    <section
+      className="home-hero"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="home-hero-slides" aria-hidden="true">
+        {slides.map((slide, index) => (
+          <Image
+            key={slide._id || slide.image}
+            src={getHeroSlideImage(slide)}
+            alt={slide.alt || 'HOZOKO special offer'}
+            fill
+            priority={index === 0}
+            sizes="100vw"
+            className={cn('home-hero-slide object-cover object-center', index === activeIndex && 'is-active')}
+          />
+        ))}
+      </div>
+
+      <div className="home-hero-overlay" aria-hidden="true" />
+
+      <div className="container-page home-hero-content">
         <div className="max-w-2xl text-white">
-          <p className="eyebrow text-white/80">New arrivals</p>
+          <p className="eyebrow text-white/85">Special offer</p>
           <h1 className="hero-title mt-4">{SITE_TAGLINE}</h1>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8">
             <Link href="/products" className="btn-primary border-white bg-white text-ink hover:bg-stone-100">
               Shop now
-            </Link>
-            <Link href="/?auth=signup" className="btn-secondary border-white/40 bg-transparent text-white hover:border-white" scroll={false}>
-              Create account
             </Link>
           </div>
         </div>
       </div>
+
+      {slides.length > 1 ? (
+        <div className="home-hero-dots" role="tablist" aria-label="Hero offers">
+          {slides.map((slide, index) => (
+            <button
+              key={slide._id || `dot-${index}`}
+              type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-label={`Show offer slide ${index + 1}`}
+              className={cn('home-hero-dot', index === activeIndex && 'is-active')}
+              onClick={() => setActiveIndex(index)}
+            />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
