@@ -18,15 +18,18 @@ function extractLayerBody(filename, layerName) {
 }
 
 const components = extractLayerBody('components.css', 'components');
+const animations = extractLayerBody('animations.css', 'components');
 const utilities = extractLayerBody('utilities.css', 'utilities');
 
 const globals = `@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Composed from styles/components.css — edit that file, then: npm run styles */
+/* Composed from styles/components.css + animations.css — edit those files, then: npm run styles */
 @layer components {
 ${components}
+
+${animations}
 }
 
 /* Composed from styles/utilities.css */
@@ -44,4 +47,4 @@ body {
 `;
 
 fs.writeFileSync(path.join(stylesDir, 'globals.css'), globals);
-console.log('Composed styles/globals.css from components.css + utilities.css');
+console.log('Composed styles/globals.css from components.css + animations.css + utilities.css');

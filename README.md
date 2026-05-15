@@ -70,6 +70,8 @@ backend/
 ### Auth
 - `POST /api/auth/signup`
 - `POST /api/auth/login`
+- `POST /api/auth/forgot-password`
+- `POST /api/auth/reset-password`
 - `POST /api/auth/logout`
 - `GET /api/auth/me`
 
@@ -122,7 +124,7 @@ cd backend
 cp .env.example .env
 ```
 
-Update `backend/.env` with your MongoDB URI, JWT secret, client URL, and Razorpay credentials.
+Update `backend/.env` with your MongoDB URI, JWT secret, `CLIENT_URL` (use `http://localhost:3000` for local Next.js), Razorpay credentials, and for **forgot password emails** your Resend API key (see `backend/.env.example`).
 
 Install dependencies and seed demo data:
 
@@ -132,7 +134,7 @@ npm run seed
 npm run dev
 ```
 
-The API runs on `http://localhost:5000`.
+The API runs on `http://localhost:5000`. In **development**, after a successful forgot-password request for a real user, the **reset link is printed in this terminal** even if email also sends—handy for quick local testing.
 
 ### 3. Configure the frontend
 
@@ -178,9 +180,11 @@ After running the seed script:
 - `MONGODB_URI`
 - `JWT_SECRET`
 - `JWT_EXPIRE`
-- `CLIENT_URL`
+- `CLIENT_URL` (frontend origin; reset links use this URL)
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_KEY_SECRET`
+- **Password reset emails (recommended: [Resend](https://resend.com))**: `RESEND_API_KEY`; optional `RESEND_FROM` or `EMAIL_FROM` (use a verified domain in production—or Resend's test sender `onboarding@resend.dev` for development)
+- SMTP alternative (omit `RESEND_API_KEY`): `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`
 
 ### Frontend
 - `NEXT_PUBLIC_API_URL`

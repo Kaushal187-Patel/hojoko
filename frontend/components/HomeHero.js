@@ -21,6 +21,11 @@ export default function HomeHero({ slides: initialSlides = [] }) {
   const slides = initialSlides.length ? initialSlides : FALLBACK_SLIDES;
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
+
+  useEffect(() => {
+    setHeroVisible(true);
+  }, []);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -60,7 +65,7 @@ export default function HomeHero({ slides: initialSlides = [] }) {
 
       <div className="home-hero-overlay" aria-hidden="true" />
 
-      <div className="container-page home-hero-content">
+      <div className={cn('container-page home-hero-content motion-reveal-fade', heroVisible && 'is-visible')}>
         <div className="max-w-2xl text-white">
           <p className="eyebrow text-white/85">Special offer</p>
           <h1 className="hero-title mt-4">{SITE_TAGLINE}</h1>

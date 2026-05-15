@@ -1,0 +1,215 @@
+/* GPU-friendly motion — edit here, then: npm run styles */
+@layer components {
+  :root {
+    --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
+    --motion-duration: 0.55s;
+    --motion-duration-fast: 0.35s;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .motion-reveal {
+      opacity: 0;
+      transform: translate3d(0, 18px, 0);
+      transition:
+        opacity var(--motion-duration) var(--ease-out-expo),
+        transform var(--motion-duration) var(--ease-out-expo);
+      transition-delay: var(--motion-delay, 0ms);
+    }
+
+    .motion-reveal.is-visible {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    /* Scroll down: enter from below */
+    .motion-from-below {
+      transform: translate3d(0, 28px, 0);
+    }
+
+    .motion-from-below.is-visible {
+      transform: translate3d(0, 0, 0);
+    }
+
+    /* Scroll up: enter from above */
+    .motion-from-above {
+      transform: translate3d(0, -28px, 0);
+    }
+
+    .motion-from-above.is-visible {
+      transform: translate3d(0, 0, 0);
+    }
+
+    .motion-reveal-fade {
+      opacity: 0;
+      transition: opacity var(--motion-duration) var(--ease-out-soft);
+      transition-delay: var(--motion-delay, 0ms);
+    }
+
+    .motion-reveal-fade.is-visible {
+      opacity: 1;
+    }
+
+    .motion-hover-lift {
+      transition:
+        transform var(--motion-duration-fast) var(--ease-out-expo),
+        box-shadow var(--motion-duration-fast) var(--ease-out-expo),
+        border-color 0.25s ease;
+    }
+
+    .motion-hover-lift:hover {
+      transform: translate3d(0, -4px, 0);
+      box-shadow: 0 16px 40px rgba(23, 20, 18, 0.1);
+    }
+
+    .motion-hover-scale {
+      transition: transform var(--motion-duration-fast) var(--ease-out-expo);
+    }
+
+    .motion-hover-scale:hover {
+      transform: scale(1.04);
+    }
+
+    .motion-hover-scale:active {
+      transform: scale(0.98);
+    }
+
+    .motion-image-zoom {
+      transition: transform 0.6s var(--ease-out-expo);
+    }
+
+    .group:hover .motion-image-zoom {
+      transform: scale3d(1.05, 1.05, 1);
+    }
+
+    .motion-icon-bounce {
+      transition: transform 0.3s var(--ease-out-expo);
+    }
+
+    .motion-icon-bounce:hover {
+      transform: translate3d(0, -1px, 0);
+    }
+
+    .main-shell {
+      view-transition-name: main-content;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .motion-reveal,
+    .motion-reveal-fade,
+    .motion-from-below,
+    .motion-from-above {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .footer-link::after,
+    .site-header-nav-link::after,
+    .nav-link::after {
+      display: none;
+    }
+
+    .motion-hover-lift:hover,
+    .group:hover .motion-image-zoom,
+    .motion-hover-scale:hover {
+      transform: none;
+      box-shadow: inherit;
+    }
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    transition:
+      transform var(--motion-duration-fast) var(--ease-out-expo),
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .btn-primary:hover:not(:disabled),
+    .btn-secondary:hover:not(:disabled) {
+      transform: translate3d(0, -1px, 0);
+    }
+
+    .btn-primary:active:not(:disabled),
+    .btn-secondary:active:not(:disabled) {
+      transform: translate3d(0, 0, 0) scale(0.98);
+    }
+  }
+
+  .footer-link,
+  .site-header-nav-link,
+  .nav-link,
+  .site-header-delivery-link {
+    position: relative;
+    transition:
+      color 0.25s ease,
+      opacity 0.25s ease,
+      transform var(--motion-duration-fast) var(--ease-out-expo);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .footer-link:hover,
+    .site-header-nav-link:hover,
+    .nav-link:hover,
+    .site-header-delivery-link:hover {
+      opacity: 0.85;
+      transform: translate3d(0, -1px, 0);
+    }
+
+    .footer-link::after,
+    .site-header-nav-link::after,
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s var(--ease-out-expo);
+    }
+
+    .footer-link:hover::after,
+    .site-header-nav-link:hover::after,
+    .nav-link:hover::after {
+      transform: scaleX(1);
+    }
+
+    .header-icon-action {
+      transition: transform var(--motion-duration-fast) var(--ease-out-expo);
+    }
+
+    .header-icon-action:hover {
+      transform: translate3d(0, -2px, 0);
+    }
+
+    .header-icon-action:active {
+      transform: scale(0.94);
+    }
+  }
+
+  .surface-tile,
+  .promo-card {
+    @apply motion-hover-lift;
+  }
+
+  .product-grid-performance {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 420px;
+  }
+}

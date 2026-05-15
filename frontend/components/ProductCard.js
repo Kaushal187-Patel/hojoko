@@ -10,6 +10,8 @@ import StarRating from '@/components/StarRating';
 import { addToCart, openCartDrawer } from '@/redux/slices/cartSlice';
 import { selectIsWishlisted, toggleWishlistItem } from '@/redux/slices/wishlistSlice';
 import { formatCurrency, formatReviewCount, getProductImage, getProductUrl } from '@/utils/helpers';
+import { useScrollReveal } from '@/hooks/useInView';
+import { cn } from '@/utils/cn';
 
 export default function ProductCard({
   product,
@@ -32,6 +34,7 @@ export default function ProductCard({
   const rating = product.rating || 0;
   const reviewLabel = formatReviewCount(product.numReviews);
   const showMrp = product.comparePrice && product.comparePrice > product.price;
+  const { ref, visible, enterFrom } = useScrollReveal({ rootMargin: '0px 0px -5% 0px', once: false });
 
   const handleWishlist = (event) => {
     event.preventDefault();
@@ -78,7 +81,7 @@ export default function ProductCard({
           fill
           priority={priority}
           sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-cover transition duration-500 ease-out group-hover:scale-105"
+          className="object-cover motion-image-zoom"
         />
         {isNew && <span className="badge-new">New</span>}
       </div>
@@ -155,18 +158,23 @@ export default function ProductCard({
     </article>
   );
 
-  const wrapStyle = { animationDelay: `${index * 70}ms` };
+  const wrapClass = cn(
+    'product-card-wrap group motion-reveal motion-hover-lift',
+    visible && 'is-visible',
+    enterFrom === 'below' ? 'motion-from-below' : 'motion-from-above'
+  );
+  const wrapStyle = { '--motion-delay': `${index * 60}ms` };
 
   if (admin) {
     return (
-      <div className="product-card-wrap group" style={wrapStyle}>
+      <div ref={ref} className={wrapClass} style={wrapStyle}>
         {cardBody}
       </div>
     );
   }
 
   return (
-    <Link href={getProductUrl(product)} className="product-card-wrap group" style={wrapStyle}>
+    <Link ref={ref} href={getProductUrl(product)} className={wrapClass} style={wrapStyle}>
       {cardBody}
     </Link>
   );

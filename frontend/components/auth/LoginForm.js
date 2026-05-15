@@ -57,6 +57,12 @@ export default function LoginForm() {
         required
       />
 
+      <div className="-mt-2 flex justify-end">
+        <Link href="/forgot-password" className="brand-link text-sm">
+          Forgot password?
+        </Link>
+      </div>
+
       <button type="submit" className="btn-primary w-full" disabled={loading}>
         {loading ? 'Signing in...' : 'Login'}
       </button>

@@ -7,12 +7,15 @@ const sans = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
+  preload: true,
 });
 
 const serif = Cormorant_Garamond({
   subsets: ['latin'],
+  weight: ['400', '500', '600'],
   variable: '--font-serif',
   display: 'swap',
+  preload: true,
 });
 
 export const metadata = {
@@ -23,7 +26,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
-      <body>
+      <body className="min-h-screen antialiased">
         <ClientShell>{children}</ClientShell>
       </body>
     </html>
