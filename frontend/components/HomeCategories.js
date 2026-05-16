@@ -32,7 +32,7 @@ export default function HomeCategories({ categories = [] }) {
               />
             </div>
             <div className="px-4 py-4 text-center">
-              <span className="font-serif text-lg text-ink transition group-hover:text-stone-700">{category.name}</span>
+              <span className="footer-link font-serif text-lg text-ink">{category.name}</span>
             </div>
           </Link>
         ))}

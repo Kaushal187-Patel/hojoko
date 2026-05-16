@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import useClientAuth from '@/hooks/useClientAuth';
 import Logo from '@/components/Logo';
 import { logoutUser } from '@/redux/slices/authSlice';
 import { clearCartState } from '@/redux/slices/cartSlice';
@@ -128,8 +129,9 @@ function HeaderIconAction({ href, onClick, label, icon, badge, scroll = true, cl
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user, isAuthenticated, ready, storeUser } = useClientAuth();
   const { cart } = useSelector((state) => state.cart);
   const wishlistItems = useSelector(selectWishlistItems);
   const cartCount = cart?.totalItems || 0;
@@ -143,8 +145,15 @@ export default function Navbar() {
   const accountHref = adminUser ? '/admin' : '/dashboard';
 
   useEffect(() => {
-    dispatch(hydrateWishlist(user?._id || null));
-  }, [dispatch, user]);
+    if (!ready) return;
+    dispatch(hydrateWishlist(storeUser?._id || null));
+  }, [dispatch, ready, storeUser]);
+
+  useEffect(() => {
+    if (pathname === '/products') {
+      setQuery(searchParams.get('search') || '');
+    }
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     categoryService
@@ -154,7 +163,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (!user) {
+    if (!ready || !storeUser) {
       setDeliveryAddress('');
       return;
     }
@@ -166,7 +175,7 @@ export default function Navbar() {
         setDeliveryAddress(formatUserAddress(selected, { short: true }));
       })
       .catch(() => setDeliveryAddress(''));
-  }, [user]);
+  }, [ready, storeUser]);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
@@ -189,7 +198,7 @@ export default function Navbar() {
         </Link>
         <Logo />
         <div className="header-mobile-icons">
-          {user ? (
+          {isAuthenticated ? (
             <HeaderIconAction href={accountHref} label="Account" icon={<ProfileIcon />} className="header-icon-compact" />
           ) : (
             <HeaderIconAction href={signInHref} label="Sign In" icon={<ProfileIcon />} scroll={false} className="header-icon-compact" />
@@ -217,7 +226,7 @@ export default function Navbar() {
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder='Search for ""'
+          placeholder="Search products, brands…"
           className="site-header-search-input"
           aria-label="Search products"
         />
@@ -227,7 +236,7 @@ export default function Navbar() {
         <LocationIcon />
         <span className="site-header-mobile-delivery-text">
           Delivery to{' '}
-          {user ? (
+          {isAuthenticated ? (
             deliveryAddress ? (
               <Link href="/cart" className="site-header-delivery-link">
                 {deliveryAddress}
@@ -254,14 +263,14 @@ export default function Navbar() {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder='Search for ""'
+            placeholder="Search products, brands…"
             className="site-header-search-input"
             aria-label="Search products"
           />
         </form>
 
         <div className="header-icon-actions">
-          {user ? (
+          {isAuthenticated ? (
             <>
               <HeaderIconAction href={accountHref} label="Account" icon={<ProfileIcon />} />
               <HeaderIconAction label="Logout" icon={<LogoutIcon />} onClick={handleLogout} />
@@ -306,7 +315,7 @@ export default function Navbar() {
 
           <p className="site-header-delivery">
             Delivery to{' '}
-            {user ? (
+            {isAuthenticated ? (
               deliveryAddress ? (
                 <Link href="/cart" className="site-header-delivery-link">
                   {deliveryAddress}

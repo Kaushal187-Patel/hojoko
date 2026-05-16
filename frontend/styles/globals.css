@@ -169,8 +169,12 @@
     @apply border border-stone-200 bg-white p-6;
   }
 
+  .link-underline {
+    @apply relative text-stone-700 transition-colors hover:text-ink;
+  }
+
   .nav-link {
-    @apply text-[11px] font-medium uppercase tracking-[0.22em] text-stone-700 transition hover:text-ink;
+    @apply link-underline text-[11px] font-medium uppercase tracking-[0.22em];
   }
 
   /* Site chrome */
@@ -279,7 +283,7 @@
   }
 
   .categories-browse-tab-label {
-    @apply line-clamp-2 text-[10px] leading-tight text-stone-600;
+    @apply footer-link line-clamp-2 text-[10px] leading-tight;
   }
 
   .categories-browse-tab.is-active .categories-browse-tab-label {
@@ -299,7 +303,7 @@
   }
 
   .categories-browse-feature-card {
-    @apply flex min-h-24 items-end rounded-xl border border-stone-200 bg-white p-3 font-serif text-lg text-ink transition hover:border-ink;
+    @apply footer-link flex min-h-24 items-end rounded-xl border border-stone-200 bg-white p-3 font-serif text-lg text-ink transition hover:border-ink;
   }
 
   .categories-browse-section-title {
@@ -311,7 +315,7 @@
   }
 
   .categories-browse-tile {
-    @apply flex flex-col items-center gap-2 text-center text-sm text-stone-700 transition hover:text-ink;
+    @apply flex flex-col items-center gap-2 text-center text-sm;
   }
 
   .categories-browse-tile-image {
@@ -327,7 +331,13 @@
   }
 
   .site-header-nav-links {
-    @apply flex items-center gap-5 overflow-x-auto md:gap-7;
+    @apply flex min-w-0 flex-1 items-center gap-5 overflow-x-auto md:gap-7;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .site-header-nav-links::-webkit-scrollbar {
+    display: none;
   }
 
   .site-header-nav-link {
@@ -335,7 +345,7 @@
   }
 
   .site-header-nav-link-active {
-    @apply text-ink;
+    @apply font-medium text-ink;
   }
 
   .site-header-delivery {
@@ -395,7 +405,7 @@
   }
 
   .footer-link {
-    @apply text-sm text-stone-700 transition hover:text-ink;
+    @apply link-underline inline-block text-sm;
   }
 
   .site-footer-bar {
@@ -619,7 +629,11 @@
   }
 
   .product-card-actions {
-    @apply mt-auto flex w-full items-stretch gap-1.5 pt-2.5 md:items-center md:justify-end md:gap-2 md:pt-4;
+    @apply mt-auto flex w-full flex-col gap-2 pt-2.5 md:flex-row md:items-stretch md:gap-2 md:pt-4;
+  }
+
+  .product-card-actions-icons {
+    @apply flex w-full items-center justify-end gap-1.5 md:w-auto md:shrink-0 md:gap-2;
   }
 
   .product-card-btn {
@@ -639,11 +653,23 @@
   }
 
   .product-card-btn-cart {
-    @apply h-8 min-h-8 min-w-0 flex-1 rounded border-ink px-2 text-[10px] font-bold uppercase leading-none tracking-[0.06em] whitespace-nowrap hover:bg-stone-50 md:h-9 md:min-h-9 md:flex-none md:rounded-md md:border-stone-300 md:px-4 md:text-xs md:font-semibold md:tracking-[0.08em];
+    @apply h-9 w-full min-w-0 rounded border-ink px-3 text-[10px] font-bold uppercase leading-none tracking-[0.08em] hover:bg-stone-50 md:h-9 md:flex-1 md:rounded-md md:border-stone-300 md:px-4 md:text-xs md:font-semibold;
   }
 
   .product-card-btn-cart:disabled {
     @apply border-stone-200 bg-stone-50 text-stone-400;
+  }
+
+  .product-card-btn-share {
+    @apply h-8 w-8 min-w-8 shrink-0 rounded border-stone-300 text-stone-700 hover:border-ink hover:text-ink md:h-9 md:w-9;
+  }
+
+  .product-share-actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .product-share-copy {
+    @apply text-sm;
   }
 
   .badge-new {
@@ -815,6 +841,8 @@
     --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
     --motion-duration: 0.55s;
     --motion-duration-fast: 0.35s;
+    --link-underline-duration: 0.5s;
+    --link-underline-delay: 0.08s;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -923,9 +951,8 @@
       transition: none;
     }
 
-    .footer-link::after,
-    .site-header-nav-link::after,
-    .nav-link::after {
+    .link-underline::after,
+    .footer-link::after {
       display: none;
     }
 
@@ -959,45 +986,62 @@
     }
   }
 
-  .footer-link,
-  .site-header-nav-link,
-  .nav-link,
-  .site-header-delivery-link {
-    position: relative;
+  .link-underline,
+  .footer-link {
     transition:
       color 0.25s ease,
-      opacity 0.25s ease,
       transform var(--motion-duration-fast) var(--ease-out-expo);
   }
 
+  .site-header-delivery-link {
+    position: relative;
+    transition: color 0.25s ease;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
+    .link-underline:hover,
     .footer-link:hover,
-    .site-header-nav-link:hover,
-    .nav-link:hover,
-    .site-header-delivery-link:hover {
-      opacity: 0.85;
+    .group:hover .link-underline,
+    .group:hover .footer-link,
+    .categories-browse-tab:hover .link-underline,
+    .categories-browse-tab:hover .footer-link {
+      color: #171412;
       transform: translate3d(0, -1px, 0);
     }
 
-    .footer-link::after,
-    .site-header-nav-link::after,
-    .nav-link::after {
+    .site-header-delivery-link:hover {
+      color: #171412;
+    }
+
+    /* Underline: grows left → right on hover; shrinks right → left on hover out */
+    .link-underline::after,
+    .footer-link::after {
       content: '';
       position: absolute;
       left: 0;
-      bottom: -2px;
+      bottom: -3px;
       width: 100%;
-      height: 1px;
-      background: currentColor;
+      height: 2px;
+      background: #171412;
       transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s var(--ease-out-expo);
+      transform-origin: right center;
+      transition: transform var(--link-underline-duration) var(--ease-out-expo);
+      transition-delay: 0s;
+      pointer-events: none;
     }
 
+    .link-underline:hover::after,
     .footer-link:hover::after,
-    .site-header-nav-link:hover::after,
-    .nav-link:hover::after {
+    .group:hover .link-underline::after,
+    .group:hover .footer-link::after,
+    .categories-browse-tab:hover .link-underline::after,
+    .categories-browse-tab:hover .footer-link::after,
+    .site-header-nav-link-active::after,
+    .categories-browse-tab.is-active .link-underline::after,
+    .categories-browse-tab.is-active .footer-link::after {
       transform: scaleX(1);
+      transform-origin: left center;
+      transition-delay: var(--link-underline-delay);
     }
 
     .header-icon-action {

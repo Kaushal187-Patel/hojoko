@@ -1,16 +1,23 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/ProductCard';
 import ProductGridSkeleton from '@/components/ProductGridSkeleton';
 import ProductGrid from '@/components/ui/ProductGrid';
 import { categoryService, productService } from '@/services';
 
 export default function ProductListing({ categorySlug = '', showCategoryFilter = true }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('search')?.trim() || '';
+
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(categorySlug);
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     setSelectedCategory(categorySlug);
@@ -31,15 +38,18 @@ export default function ProductListing({ categorySlug = '', showCategoryFilter =
       try {
         const { data } = await productService.getAll({
           category: selectedCategory || undefined,
+          search: searchQuery || undefined,
           limit: 100,
-          sort: 'rank',
+          sort: searchQuery ? 'name' : 'rank',
         });
         if (active) {
-          setProducts(data.products);
+          setProducts(data.products || []);
+          setTotal(data.total ?? data.products?.length ?? 0);
         }
       } catch {
         if (active) {
           setProducts([]);
+          setTotal(0);
         }
       } finally {
         if (active) {
@@ -52,10 +62,29 @@ export default function ProductListing({ categorySlug = '', showCategoryFilter =
     return () => {
       active = false;
     };
-  }, [selectedCategory]);
+  }, [selectedCategory, searchQuery]);
+
+  const clearSearch = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('search');
+    const query = params.toString();
+    router.push(query ? `/products?${query}` : '/products');
+  };
 
   return (
     <div className="space-y-6">
+      {searchQuery ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3">
+          <p className="text-sm text-stone-700">
+            Showing results for <span className="font-semibold text-ink">&quot;{searchQuery}&quot;</span>
+            {!loading && <span className="text-stone-500"> ({total} found)</span>}
+          </p>
+          <button type="button" className="btn-secondary text-sm" onClick={clearSearch}>
+            Clear search
+          </button>
+        </div>
+      ) : null}
+
       {showCategoryFilter && categories.length > 0 ? (
         <div className="max-w-sm">
           <label className="field-label" htmlFor="product-category-filter">
@@ -65,7 +94,15 @@ export default function ProductListing({ categorySlug = '', showCategoryFilter =
             id="product-category-filter"
             className="input-field mt-2"
             value={selectedCategory}
-            onChange={(event) => setSelectedCategory(event.target.value)}
+            onChange={(event) => {
+              const slug = event.target.value;
+              setSelectedCategory(slug);
+              const params = new URLSearchParams();
+              if (searchQuery) params.set('search', searchQuery);
+              if (slug) params.set('category', slug);
+              const query = params.toString();
+              router.push(query ? `/products?${query}` : '/products');
+            }}
           >
             <option value="">All categories</option>
             {categories.map((category) => (
@@ -80,7 +117,22 @@ export default function ProductListing({ categorySlug = '', showCategoryFilter =
       {loading ? (
         <ProductGridSkeleton />
       ) : products.length === 0 ? (
-        <p className="body-muted">No products found.</p>
+        <div className="card space-y-3">
+          <p className="body-muted">
+            {searchQuery
+              ? `No products match "${searchQuery}". Try another keyword or browse all products.`
+              : 'No products found.'}
+          </p>
+          {searchQuery ? (
+            <button type="button" className="btn-primary inline-flex" onClick={clearSearch}>
+              View all products
+            </button>
+          ) : (
+            <Link href="/products" className="btn-primary inline-flex">
+              Browse shop
+            </Link>
+          )}
+        </div>
       ) : (
         <ProductGrid>
           {products.map((product, index) => (

@@ -10,11 +10,11 @@ import { cn } from '@/utils/cn';
 
 function CategoryTile({ category }) {
   return (
-    <Link href={`/categories/${category.slug}`} className="categories-browse-tile">
+    <Link href={`/categories/${category.slug}`} className="group categories-browse-tile">
       <div className="categories-browse-tile-image">
         <Image src={getCategoryImage(category)} alt={category.name} fill sizes="120px" className="object-cover" />
       </div>
-      <span>{category.name}</span>
+      <span className="footer-link">{category.name}</span>
     </Link>
   );
 }

@@ -48,20 +48,7 @@ export const getHeroSlideImage = (slide) => {
   return 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=2000&q=80';
 };
 
-export const getProductUrl = (product) => {
-  const categorySlug = product?.category?.slug;
-  const productSlug = product?.slug;
-
-  if (categorySlug && productSlug) {
-    return `/categories/${categorySlug}/${productSlug}`;
-  }
-
-  if (product?._id) {
-    return `/products/${product._id}`;
-  }
-
-  return '/products';
-};
+export { getProductAbsoluteUrl, getProductUrl, getSiteOrigin } from '@/utils/productUrl';
 
 export const loadRazorpayScript = () =>
   new Promise((resolve) => {

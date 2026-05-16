@@ -32,8 +32,16 @@ const getProducts = async (req, res, next) => {
 
     const query = { isActive: true };
 
-    if (req.query.search) {
-      query.$text = { $search: req.query.search };
+    const searchTerm = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+    if (searchTerm) {
+      const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(escaped, 'i');
+      query.$or = [
+        { name: regex },
+        { shortDescription: regex },
+        { description: regex },
+        { brand: regex },
+      ];
     }
 
     if (req.query.category) {

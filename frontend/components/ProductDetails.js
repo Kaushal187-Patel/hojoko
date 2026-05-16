@@ -9,7 +9,9 @@ import ProductImageGallery from '@/components/ProductImageGallery';
 import ProductReviews from '@/components/ProductReviews';
 import StarRating from '@/components/StarRating';
 import { addToCart, openCartDrawer } from '@/redux/slices/cartSlice';
+import ShareProductButton from '@/components/product/ShareProductButton';
 import { formatCurrency, formatReviewCount } from '@/utils/helpers';
+import { getProductAbsoluteUrl } from '@/utils/productUrl';
 
 export default function ProductDetails({ product: initialProduct, quantity, onQuantityChange }) {
   const router = useRouter();
@@ -88,9 +90,19 @@ export default function ProductDetails({ product: initialProduct, quantity, onQu
             <span className="body-muted">{product.stock} available</span>
           </div>
 
-          <button type="button" className="btn-primary" onClick={handleAddToCart} disabled={product.stock < 1}>
-            QUICK BUY
-          </button>
+          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+            <button type="button" className="btn-primary" onClick={handleAddToCart} disabled={product.stock < 1}>
+              QUICK BUY
+            </button>
+            <ShareProductButton product={product} />
+          </div>
+
+          <p className="text-xs text-stone-500">
+            Product link:{' '}
+            <a href={getProductAbsoluteUrl(product)} className="brand-link break-all">
+              {getProductAbsoluteUrl(product)}
+            </a>
+          </p>
         </div>
       </div>
 

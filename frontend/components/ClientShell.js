@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import AuthBootstrap from '@/components/AuthBootstrap';
@@ -18,7 +19,9 @@ export default function ClientShell({ children }) {
     <StoreProvider>
       <AuthBootstrap>
         <AnnouncementBar />
-        <Navbar />
+        <Suspense fallback={<header className="site-header" aria-hidden />}>
+          <Navbar />
+        </Suspense>
         <main className="main-shell">{children}</main>
         <AuthModalGate />
         <CartDrawer />

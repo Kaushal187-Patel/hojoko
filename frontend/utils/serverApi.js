@@ -34,6 +34,24 @@ export async function getHeroSlides() {
   }
 }
 
+export async function getProductBySlug(categorySlug, productSlug) {
+  try {
+    const response = await fetch(
+      `${API_URL}/products/by-slug/${encodeURIComponent(categorySlug)}/${encodeURIComponent(productSlug)}`,
+      { next: { revalidate: 60 } }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.product || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getCategories() {
   try {
     const response = await fetch(`${API_URL}/categories`, {
