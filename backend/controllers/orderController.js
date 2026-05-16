@@ -4,6 +4,7 @@ const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const Payment = require('../models/Payment');
 const razorpay = require('../config/razorpay');
+const { normalizeShippingAddress, validateAddressPayload } = require('../utils/addressHelpers');
 
 // @desc    Get user orders
 // @route   GET /api/orders
@@ -54,6 +55,13 @@ const createOrder = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Shipping address is required' });
     }
 
+    const addressErrors = validateAddressPayload(shippingAddress);
+    if (addressErrors.length) {
+      return res.status(400).json({ success: false, message: addressErrors[0], errors: addressErrors });
+    }
+
+    const normalizedShipping = normalizeShippingAddress(shippingAddress);
+
     const cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
 
     if (!cart || cart.items.length === 0) {
@@ -85,7 +93,7 @@ const createOrder = async (req, res, next) => {
     const order = await Order.create({
       user: req.user._id,
       orderItems,
-      shippingAddress,
+      shippingAddress: normalizedShipping,
       itemsPrice,
       shippingPrice,
       taxPrice,

@@ -44,6 +44,11 @@ export const orderService = {
 export const userService = {
   getProfile: () => api.get('/users/profile'),
   updateProfile: (data) => api.put('/users/profile', data),
+  getAddresses: () => api.get('/users/addresses'),
+  createAddress: (data) => api.post('/users/addresses', data),
+  updateAddress: (id, data) => api.put(`/users/addresses/${id}`, data),
+  deleteAddress: (id) => api.delete(`/users/addresses/${id}`),
+  setDefaultAddress: (id) => api.patch(`/users/addresses/${id}/default`),
 };
 
 export const adminService = {

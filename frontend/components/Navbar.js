@@ -10,6 +10,7 @@ import { clearCartState } from '@/redux/slices/cartSlice';
 import { hydrateWishlist, selectWishlistItems } from '@/redux/slices/wishlistSlice';
 import { categoryService, userService } from '@/services';
 import { isAdminUser } from '@/utils/auth';
+import { resolveSelectedAddress } from '@/utils/address';
 import { formatUserAddress } from '@/utils/helpers';
 import { cn } from '@/utils/cn';
 import toast from 'react-hot-toast';
@@ -159,8 +160,11 @@ export default function Navbar() {
     }
 
     userService
-      .getProfile()
-      .then(({ data }) => setDeliveryAddress(formatUserAddress(data.user?.address)))
+      .getAddresses()
+      .then(({ data }) => {
+        const selected = resolveSelectedAddress(data.addresses || []);
+        setDeliveryAddress(formatUserAddress(selected, { short: true }));
+      })
       .catch(() => setDeliveryAddress(''));
   }, [user]);
 
@@ -225,11 +229,11 @@ export default function Navbar() {
           Delivery to{' '}
           {user ? (
             deliveryAddress ? (
-              <Link href="/profile" className="site-header-delivery-link">
+              <Link href="/cart" className="site-header-delivery-link">
                 {deliveryAddress}
               </Link>
             ) : (
-              <Link href="/profile" className="site-header-delivery-link">
+              <Link href="/profile#addresses" className="site-header-delivery-link">
                 Add your address
               </Link>
             )
@@ -304,11 +308,11 @@ export default function Navbar() {
             Delivery to{' '}
             {user ? (
               deliveryAddress ? (
-                <Link href="/profile" className="site-header-delivery-link">
+                <Link href="/cart" className="site-header-delivery-link">
                   {deliveryAddress}
                 </Link>
               ) : (
-                <Link href="/profile" className="site-header-delivery-link">
+                <Link href="/profile#addresses" className="site-header-delivery-link">
                   Add your address
                 </Link>
               )

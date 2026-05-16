@@ -3,13 +3,16 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import AdminLayout from '@/components/ui/AdminLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import AdminLayout from '@/components/ui/AdminLayout';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { adminService } from '@/services';
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -35,13 +38,18 @@ export default function AdminUsersPage() {
     }
   };
 
-  const removeUser = async (id) => {
+  const confirmDeleteUser = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
     try {
-      await adminService.deleteUser(id);
+      await adminService.deleteUser(deleteTarget.id);
       toast.success('User deleted');
+      setDeleteTarget(null);
       loadUsers();
     } catch (error) {
       toast.error(error.message || 'Delete failed');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -70,7 +78,13 @@ export default function AdminUsersPage() {
                       <span className="inline-flex items-center text-sm text-stone-500">Always active</span>
                     )}
                     {user.role !== 'admin' && (
-                      <button type="button" className="btn-secondary text-red-600" onClick={() => removeUser(user._id)}>
+                      <button
+                        type="button"
+                        className="btn-secondary text-red-600"
+                        onClick={() =>
+                          setDeleteTarget({ id: user._id, label: `${user.name} (${user.email})` })
+                        }
+                      >
                         Delete
                       </button>
                     )}
@@ -80,6 +94,18 @@ export default function AdminUsersPage() {
             </div>
           )}
       </AdminLayout>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete this user?"
+        description={
+          deleteTarget
+            ? `This will permanently remove ${deleteTarget.label}. Orders and reviews may lose user references.`
+            : ''
+        }
+        onCancel={() => !deleteLoading && setDeleteTarget(null)}
+        onConfirm={confirmDeleteUser}
+        loading={deleteLoading}
+      />
     </ProtectedRoute>
   );
 }

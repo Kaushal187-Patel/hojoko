@@ -9,6 +9,8 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { categoryService, productService } from '@/services';
 import { getProductImage } from '@/utils/helpers';
 
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+
 const emptyProduct = {
   name: '',
   shortDescription: '',
@@ -45,6 +47,8 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [uploadingIndex, setUploadingIndex] = useState(null);
   const [filterCategory, setFilterCategory] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadData = async (categorySlug = filterCategory) => {
     setLoading(true);
@@ -126,13 +130,18 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const confirmDeleteProduct = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
     try {
-      await productService.remove(id);
+      await productService.remove(deleteTarget.id);
       toast.success('Product deleted');
+      setDeleteTarget(null);
       loadData(filterCategory);
     } catch (error) {
       toast.error(error.message || 'Delete failed');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -316,7 +325,11 @@ export default function AdminProductsPage() {
                     <button type="button" className="btn-secondary" onClick={() => handleEdit(product)}>
                       Edit
                     </button>
-                    <button type="button" className="btn-secondary text-red-600" onClick={() => handleDelete(product._id)}>
+                    <button
+                      type="button"
+                      className="btn-secondary text-red-600"
+                      onClick={() => setDeleteTarget({ id: product._id, name: product.name })}
+                    >
                       Delete
                     </button>
                   </div>
@@ -325,6 +338,16 @@ export default function AdminProductsPage() {
             </div>
           )}
       </AdminLayout>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete this product?"
+        description={
+          deleteTarget ? `This will permanently remove “${deleteTarget.name}”. This cannot be undone.` : ''
+        }
+        onCancel={() => !deleteLoading && setDeleteTarget(null)}
+        onConfirm={confirmDeleteProduct}
+        loading={deleteLoading}
+      />
     </ProtectedRoute>
   );
 }

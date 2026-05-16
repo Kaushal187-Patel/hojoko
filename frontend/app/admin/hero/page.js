@@ -5,7 +5,7 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminLayout from '@/components/ui/AdminLayout';
-import LoadingSpinner from '@/components/LoadingSpinner';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { heroService } from '@/services';
 import { getHeroSlideImage } from '@/utils/helpers';
 
@@ -22,6 +22,8 @@ export default function AdminHeroPage() {
   const [uploadingId, setUploadingId] = useState(null);
   const [savingId, setSavingId] = useState(null);
   const [showDraft, setShowDraft] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -134,16 +136,19 @@ export default function AdminHeroPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Remove this slide from the homepage?')) return;
-
+  const confirmDeleteSlide = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
     try {
-      const { data } = await heroService.remove(id);
+      const { data } = await heroService.remove(deleteTarget.id);
       setSlides(data.slides || []);
       toast.success('Slide removed');
+      setDeleteTarget(null);
       loadData();
     } catch (error) {
       toast.error(error.message || 'Remove failed');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -293,7 +298,11 @@ export default function AdminHeroPage() {
                       >
                         {savingId === slide._id ? 'Saving...' : 'Update slide'}
                       </button>
-                      <button type="button" className="btn-secondary text-red-600" onClick={() => handleDelete(slide._id)}>
+                      <button
+                        type="button"
+                        className="btn-secondary text-red-600"
+                        onClick={() => setDeleteTarget({ id: slide._id })}
+                      >
                         Remove
                       </button>
                     </div>
@@ -304,6 +313,15 @@ export default function AdminHeroPage() {
           </div>
         )}
       </AdminLayout>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Remove this slide?"
+        description="This image will disappear from the homepage carousel. You can add a new slide later."
+        confirmLabel="Remove"
+        onCancel={() => !deleteLoading && setDeleteTarget(null)}
+        onConfirm={confirmDeleteSlide}
+        loading={deleteLoading}
+      />
     </ProtectedRoute>
   );
 }

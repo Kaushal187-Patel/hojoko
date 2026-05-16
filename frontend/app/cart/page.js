@@ -1,18 +1,23 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { fetchCart, removeFromCart, updateCartItem } from '@/redux/slices/cartSlice';
+import AddressSelector from '@/components/address/AddressSelector';
 import { formatCurrency, getProductImage } from '@/utils/helpers';
 
 export default function CartPage() {
   const dispatch = useDispatch();
   const { cart, loading } = useSelector((state) => state.cart);
+  const [removeTarget, setRemoveTarget] = useState(null);
+  const [removeLoading, setRemoveLoading] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(null);
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -26,10 +31,15 @@ export default function CartPage() {
     }
   };
 
-  const handleRemove = async (itemId) => {
-    const result = await dispatch(removeFromCart(itemId));
+  const confirmRemoveItem = async () => {
+    if (!removeTarget) return;
+    const idToRemove = removeTarget.id;
+    setRemoveLoading(true);
+    const result = await dispatch(removeFromCart(idToRemove));
+    setRemoveLoading(false);
 
     if (removeFromCart.fulfilled.match(result)) {
+      setRemoveTarget(null);
       toast.success('Item removed');
       return;
     }
@@ -77,7 +87,13 @@ export default function CartPage() {
                   />
                   <div className="text-right">
                     <p className="font-semibold">{formatCurrency(item.price * item.quantity)}</p>
-                    <button type="button" onClick={() => handleRemove(item._id)} className="mt-2 text-sm text-red-600">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRemoveTarget({ id: item._id, name: item.product?.name || 'this item' })
+                      }
+                      className="mt-2 text-sm text-red-600"
+                    >
                       Remove
                     </button>
                   </div>
@@ -85,7 +101,10 @@ export default function CartPage() {
               ))}
             </div>
 
-            <div className="card h-fit space-y-4">
+            <div className="space-y-4">
+              <AddressSelector onSelect={setSelectedAddress} />
+
+              <div className="card h-fit space-y-4">
               <h2 className="text-lg font-semibold">Order summary</h2>
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
@@ -99,13 +118,29 @@ export default function CartPage() {
                 <span>Total</span>
                 <span>{formatCurrency(cart.totalAmount + (cart.totalAmount > 999 ? 0 : 49))}</span>
               </div>
-              <Link href="/checkout" className="btn-primary w-full">
-                Proceed to checkout
-              </Link>
+              {selectedAddress ? (
+                <Link href="/checkout" className="btn-primary w-full">
+                  Proceed to checkout
+                </Link>
+              ) : (
+                <p className="text-center text-sm text-stone-500">Select or save a delivery address to continue.</p>
+              )}
+              </div>
             </div>
           </div>
         )}
       </div>
+      <ConfirmDialog
+        open={!!removeTarget}
+        title="Remove from cart?"
+        description={
+          removeTarget ? `${removeTarget.name} will be removed from your cart.` : ''
+        }
+        confirmLabel="Remove"
+        onCancel={() => !removeLoading && setRemoveTarget(null)}
+        onConfirm={confirmRemoveItem}
+        loading={removeLoading}
+      />
     </ProtectedRoute>
   );
 }

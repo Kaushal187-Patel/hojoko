@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import StarRating from '@/components/StarRating';
 import { reviewService } from '@/services';
 
@@ -40,6 +41,8 @@ export default function ProductReviews({ productId, onRatingUpdate }) {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [editingId, setEditingId] = useState(null);
+  const [deleteReviewOpen, setDeleteReviewOpen] = useState(false);
+  const [deleteReviewLoading, setDeleteReviewLoading] = useState(false);
 
   const loadReviews = useCallback(async () => {
     setLoading(true);
@@ -115,17 +118,22 @@ export default function ProductReviews({ productId, onRatingUpdate }) {
     }
   };
 
-  const handleDelete = async (reviewId) => {
+  const confirmDeleteReview = async () => {
+    if (!editingId) return;
+    setDeleteReviewLoading(true);
     try {
-      const { data } = await reviewService.remove(reviewId);
+      const { data } = await reviewService.remove(editingId);
       toast.success('Review removed');
       onRatingUpdate?.(data.productRating);
       setEditingId(null);
       setComment('');
       setRating(5);
+      setDeleteReviewOpen(false);
       await Promise.all([loadReviews(), loadEligibility()]);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Could not delete review');
+    } finally {
+      setDeleteReviewLoading(false);
     }
   };
 
@@ -155,7 +163,7 @@ export default function ProductReviews({ productId, onRatingUpdate }) {
               {submitting ? 'Saving...' : eligibility.hasReviewed ? 'Update review' : 'Submit review'}
             </button>
             {eligibility.hasReviewed && editingId ? (
-              <button type="button" className="btn-secondary text-red-600" onClick={() => handleDelete(editingId)}>
+              <button type="button" className="btn-secondary text-red-600" onClick={() => setDeleteReviewOpen(true)}>
                 Delete review
               </button>
             ) : null}
@@ -187,6 +195,15 @@ export default function ProductReviews({ productId, onRatingUpdate }) {
           ))
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteReviewOpen}
+        title="Delete your review?"
+        description="Your feedback will be removed and the product rating will be recalculated. This cannot be undone."
+        onCancel={() => !deleteReviewLoading && setDeleteReviewOpen(false)}
+        onConfirm={confirmDeleteReview}
+        loading={deleteReviewLoading}
+      />
     </section>
   );
 }

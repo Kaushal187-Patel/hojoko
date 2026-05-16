@@ -29,6 +29,9 @@ const orderSchema = new mongoose.Schema(
     },
     orderItems: [orderItemSchema],
     shippingAddress: {
+      houseNumber: String,
+      streetLine: String,
+      society: String,
       street: { type: String, required: true },
       city: { type: String, required: true },
       state: { type: String, required: true },

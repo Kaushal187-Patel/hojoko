@@ -5,7 +5,7 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminLayout from '@/components/ui/AdminLayout';
-import LoadingSpinner from '@/components/LoadingSpinner';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { categoryService } from '@/services';
 import { getCategoryImage } from '@/utils/helpers';
 
@@ -21,6 +21,8 @@ export default function AdminCategoriesPage() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -101,18 +103,21 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this category?')) return;
-
+  const confirmDeleteCategory = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
     try {
-      await categoryService.remove(id);
+      await categoryService.remove(deleteTarget.id);
       toast.success('Category deleted');
-      if (editingId === id) {
+      if (editingId === deleteTarget.id) {
         resetForm();
       }
+      setDeleteTarget(null);
       loadData();
     } catch (error) {
       toast.error(error.message || 'Delete failed');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -210,7 +215,11 @@ export default function AdminCategoriesPage() {
                     <button type="button" className="btn-secondary" onClick={() => handleEdit(category)}>
                       Edit
                     </button>
-                    <button type="button" className="btn-secondary text-red-600" onClick={() => handleDelete(category._id)}>
+                    <button
+                      type="button"
+                      className="btn-secondary text-red-600"
+                      onClick={() => setDeleteTarget({ id: category._id, name: category.name })}
+                    >
                       Delete
                     </button>
                   </div>
@@ -219,6 +228,18 @@ export default function AdminCategoriesPage() {
             </div>
           )}
       </AdminLayout>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete this category?"
+        description={
+          deleteTarget
+            ? `“${deleteTarget.name}” and its catalog association will be removed. This cannot be undone.`
+            : ''
+        }
+        onCancel={() => !deleteLoading && setDeleteTarget(null)}
+        onConfirm={confirmDeleteCategory}
+        loading={deleteLoading}
+      />
     </ProtectedRoute>
   );
 }

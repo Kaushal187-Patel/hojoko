@@ -1,5 +1,11 @@
-export const formatUserAddress = (address) => {
+import { formatSavedAddress, formatSavedAddressShort } from '@/utils/address';
+
+export const formatUserAddress = (address, { short = false } = {}) => {
   if (!address) return '';
+
+  if (address.houseNumber || address.streetLine || address.society || address.pinCode) {
+    return short ? formatSavedAddressShort(address) : formatSavedAddress(address);
+  }
 
   const parts = [address.street, address.city, address.zipCode, address.state, address.country].filter(Boolean);
   return parts.join(', ');

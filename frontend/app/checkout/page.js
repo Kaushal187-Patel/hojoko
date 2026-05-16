@@ -1,27 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import AddressSelector from '@/components/address/AddressSelector';
 import { orderService } from '@/services';
+import { addressToShippingPayload } from '@/utils/address';
 import { formatCurrency, loadRazorpayScript } from '@/utils/helpers';
-
-const initialAddress = {
-  street: '',
-  city: '',
-  state: '',
-  zipCode: '',
-  country: 'India',
-};
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
-  const [address, setAddress] = useState(initialAddress);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    if (!cart?.items?.length) {
+      router.replace('/cart');
+    }
+  }, [cart?.items?.length, router]);
 
   const shipping = cart?.totalAmount > 999 ? 0 : 49;
   const total = (cart?.totalAmount || 0) + shipping;
@@ -34,6 +34,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!selectedAddress) {
+      toast.error('Please select a delivery address');
+      return;
+    }
+
     setProcessing(true);
 
     try {
@@ -42,7 +47,9 @@ export default function CheckoutPage() {
         throw new Error('Razorpay SDK failed to load');
       }
 
-      const { data } = await orderService.create({ shippingAddress: address });
+      const { data } = await orderService.create({
+        shippingAddress: addressToShippingPayload(selectedAddress),
+      });
       const { order, razorpayOrder } = data;
 
       const options = {
@@ -87,48 +94,10 @@ export default function CheckoutPage() {
   return (
     <ProtectedRoute>
       <div className="container-page grid gap-8 py-10 lg:grid-cols-[1.2fr_0.8fr]">
-        <form onSubmit={handlePayment} className="card space-y-4">
+        <form onSubmit={handlePayment} className="space-y-6">
           <h1 className="text-3xl font-bold">Checkout</h1>
-          <input
-            className="input-field"
-            placeholder="Street address"
-            value={address.street}
-            onChange={(event) => setAddress({ ...address, street: event.target.value })}
-            required
-          />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <input
-              className="input-field"
-              placeholder="City"
-              value={address.city}
-              onChange={(event) => setAddress({ ...address, city: event.target.value })}
-              required
-            />
-            <input
-              className="input-field"
-              placeholder="State"
-              value={address.state}
-              onChange={(event) => setAddress({ ...address, state: event.target.value })}
-              required
-            />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <input
-              className="input-field"
-              placeholder="ZIP code"
-              value={address.zipCode}
-              onChange={(event) => setAddress({ ...address, zipCode: event.target.value })}
-              required
-            />
-            <input
-              className="input-field"
-              placeholder="Country"
-              value={address.country}
-              onChange={(event) => setAddress({ ...address, country: event.target.value })}
-              required
-            />
-          </div>
-          <button type="submit" className="btn-primary" disabled={processing}>
+          <AddressSelector onSelect={setSelectedAddress} showAddForm />
+          <button type="submit" className="btn-primary" disabled={processing || !selectedAddress}>
             {processing ? 'Processing...' : 'Pay with Razorpay'}
           </button>
         </form>

@@ -33,11 +33,27 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       street: String,
+      streetLine: String,
+      houseNumber: String,
+      society: String,
       city: String,
       state: String,
       zipCode: String,
       country: String,
     },
+    addresses: [
+      {
+        label: { type: String, default: 'Home', trim: true },
+        houseNumber: { type: String, trim: true, default: '' },
+        streetLine: { type: String, trim: true, default: '' },
+        society: { type: String, trim: true, default: '' },
+        city: { type: String, trim: true, default: '' },
+        state: { type: String, trim: true, default: '' },
+        pinCode: { type: String, trim: true, default: '' },
+        country: { type: String, default: 'India', trim: true },
+        isDefault: { type: Boolean, default: false },
+      },
+    ],
     avatar: {
       type: String,
       default: '',
