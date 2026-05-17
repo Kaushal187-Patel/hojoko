@@ -19,7 +19,48 @@ const getSortOption = (sortKey) => {
     return sortProducts;
   }
 
+  if (sortKey === 'limited') {
+    return { limitedEditionEndsAt: 1, stock: 1, rank: 1 };
+  }
+
   return sortKey;
+};
+
+const normalizeLimitedEdition = (body = {}) => {
+  const enabled = Boolean(body.isLimitedEdition);
+
+  if (!enabled) {
+    return {
+      isLimitedEdition: false,
+      limitedEditionRun: null,
+      limitedEditionEndsAt: null,
+      limitedEditionStory: '',
+    };
+  }
+
+  const run = Number(body.limitedEditionRun);
+  if (!Number.isFinite(run) || run < 1) {
+    const error = new Error('Limited edition requires a run size of at least 1');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  let endsAt;
+  if (body.limitedEditionEndsAt) {
+    endsAt = new Date(body.limitedEditionEndsAt);
+    if (Number.isNaN(endsAt.getTime())) {
+      const error = new Error('Invalid limited edition end date');
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
+  return {
+    isLimitedEdition: true,
+    limitedEditionRun: run,
+    limitedEditionEndsAt: endsAt,
+    limitedEditionStory: typeof body.limitedEditionStory === 'string' ? body.limitedEditionStory.trim() : '',
+  };
 };
 
 // @desc    Get all products with search, filter, pagination
@@ -59,6 +100,10 @@ const getProducts = async (req, res, next) => {
       query.price = {};
       if (req.query.minPrice) query.price.$gte = Number(req.query.minPrice);
       if (req.query.maxPrice) query.price.$lte = Number(req.query.maxPrice);
+    }
+
+    if (req.query.limitedEdition === 'true') {
+      query.isLimitedEdition = true;
     }
 
     const sort = getSortOption(req.query.sort);
@@ -151,9 +196,11 @@ const uploadProductImage = async (req, res, next) => {
 const createProduct = async (req, res, next) => {
   try {
     const { rating, numReviews, ...productData } = req.body;
+    const limitedEdition = normalizeLimitedEdition(productData);
     const count = await Product.countDocuments({ isActive: true, category: productData.category });
     const product = await Product.create({
       ...productData,
+      ...limitedEdition,
       rank: count,
       createdBy: req.user._id,
     });
@@ -179,6 +226,9 @@ const updateProduct = async (req, res, next) => {
       const count = await Product.countDocuments({ isActive: true, category: productData.category });
       productData.rank = count;
     }
+
+    const limitedEdition = normalizeLimitedEdition(productData);
+    Object.assign(productData, limitedEdition);
 
     const product = await Product.findByIdAndUpdate(req.params.id, productData, {
       new: true,

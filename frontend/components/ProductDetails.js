@@ -10,6 +10,7 @@ import ProductReviews from '@/components/ProductReviews';
 import StarRating from '@/components/StarRating';
 import { addToCart, openCartDrawer } from '@/redux/slices/cartSlice';
 import ShareProductButton from '@/components/product/ShareProductButton';
+import LimitedEditionPanel from '@/components/product/LimitedEditionPanel';
 import { formatCurrency, formatReviewCount } from '@/utils/helpers';
 import { getProductAbsoluteUrl } from '@/utils/productUrl';
 
@@ -63,6 +64,8 @@ export default function ProductDetails({ product: initialProduct, quantity, onQu
             ) : (
               <p className="body-muted mt-3">No reviews yet</p>
             )}
+
+            {product.isLimitedEdition ? <LimitedEditionPanel product={product} /> : null}
 
             <div className="mt-4">
               <p className="text-2xl font-bold text-ink">{formatCurrency(product.price)}</p>

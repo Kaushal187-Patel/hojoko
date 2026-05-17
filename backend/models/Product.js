@@ -64,6 +64,23 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isLimitedEdition: {
+      type: Boolean,
+      default: false,
+    },
+    limitedEditionRun: {
+      type: Number,
+      min: [1, 'Edition run must be at least 1'],
+    },
+    limitedEditionEndsAt: {
+      type: Date,
+    },
+    limitedEditionStory: {
+      type: String,
+      trim: true,
+      maxlength: [220, 'Edition story cannot exceed 220 characters'],
+      default: '',
+    },
     isActive: {
       type: Boolean,
       default: true,

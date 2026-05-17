@@ -135,6 +135,11 @@ const seed = async () => {
       category: categories[1]._id,
       stock: 3,
       brand: 'TimeCraft',
+      isLimitedEdition: true,
+      limitedEditionRun: 50,
+      limitedEditionEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      limitedEditionStory:
+        'Machined in a single batch of fifty — each dial is hand-finished before the run closes.',
       images: [
         'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80',

@@ -12,6 +12,7 @@ export default function ProductListing({ categorySlug = '', showCategoryFilter =
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search')?.trim() || '';
+  const limitedEditionOnly = searchParams.get('limitedEdition') === 'true';
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -39,8 +40,9 @@ export default function ProductListing({ categorySlug = '', showCategoryFilter =
         const { data } = await productService.getAll({
           category: selectedCategory || undefined,
           search: searchQuery || undefined,
+          limitedEdition: limitedEditionOnly ? 'true' : undefined,
           limit: 100,
-          sort: searchQuery ? 'name' : 'rank',
+          sort: limitedEditionOnly ? 'limited' : searchQuery ? 'name' : 'rank',
         });
         if (active) {
           setProducts(data.products || []);
@@ -62,7 +64,7 @@ export default function ProductListing({ categorySlug = '', showCategoryFilter =
     return () => {
       active = false;
     };
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, limitedEditionOnly]);
 
   const clearSearch = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -73,6 +75,12 @@ export default function ProductListing({ categorySlug = '', showCategoryFilter =
 
   return (
     <div className="space-y-6">
+      {limitedEditionOnly ? (
+        <div className="rounded-xl border border-ink/15 bg-stone-900 px-4 py-3 text-sm text-stone-200">
+          <span className="font-medium text-white">Limited Edition drop</span> — numbered runs with live scarcity meters.
+        </div>
+      ) : null}
+
       {searchQuery ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3">
           <p className="text-sm text-stone-700">

@@ -52,6 +52,23 @@ export async function getProductBySlug(categorySlug, productSlug) {
   }
 }
 
+export async function getLimitedEditionProducts(limit = 4) {
+  try {
+    const response = await fetch(`${API_URL}/products?limitedEdition=true&limit=${limit}&sort=limited`, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+    return data.products || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function getCategories() {
   try {
     const response = await fetch(`${API_URL}/categories`, {

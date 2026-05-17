@@ -671,6 +671,92 @@
     @apply absolute left-3 top-3 bg-white px-2 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-ink;
   }
 
+  .badge-limited-edition {
+    @apply absolute right-0 top-0 z-10 flex min-w-[4.5rem] flex-col items-center bg-ink px-2 py-2 text-center text-white shadow-soft;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%);
+  }
+
+  .badge-limited-edition-compact {
+    @apply min-w-[3.75rem] px-1.5 py-1.5 text-[9px];
+  }
+
+  .badge-limited-edition-mark {
+    @apply text-[9px] font-medium uppercase tracking-[0.28em] text-stone-300;
+  }
+
+  .badge-limited-edition-count {
+    @apply mt-0.5 font-serif text-sm leading-none;
+  }
+
+  .product-card-is-limited .product-card-image {
+    @apply ring-1 ring-ink/10;
+  }
+
+  .product-card-edition-ring {
+    @apply pointer-events-none absolute inset-3 rounded-sm border border-white/50;
+    box-shadow: inset 0 0 0 1px rgba(23, 20, 18, 0.08);
+  }
+
+  .limited-edition-meter-track {
+    @apply h-1.5 w-full overflow-hidden rounded-full bg-stone-200;
+  }
+
+  .limited-edition-meter-fill {
+    @apply block h-full rounded-full bg-ink transition-[width] duration-700 ease-out;
+  }
+
+  .limited-edition-meter-caption {
+    @apply mt-2 text-xs text-stone-500;
+  }
+
+  .limited-edition-panel {
+    @apply space-y-4 rounded-xl border border-ink/15 bg-gradient-to-br from-stone-50 to-canvas p-5;
+  }
+
+  .limited-edition-panel-eyebrow {
+    @apply text-[10px] font-medium uppercase tracking-[0.28em] text-stone-500;
+  }
+
+  .limited-edition-panel-title {
+    @apply font-serif text-2xl text-ink;
+  }
+
+  .limited-edition-panel-title span {
+    @apply underline decoration-stone-300 decoration-2 underline-offset-4;
+  }
+
+  .limited-edition-panel-timer {
+    @apply mt-2 text-sm font-medium text-ink;
+  }
+
+  .limited-edition-panel-closed {
+    @apply mt-2 text-sm font-medium uppercase tracking-[0.2em] text-stone-500;
+  }
+
+  .limited-edition-panel-story {
+    @apply text-sm leading-relaxed text-stone-600;
+  }
+
+  .limited-edition-panel-alert {
+    @apply border-l-2 border-ink pl-3 text-sm text-stone-700;
+  }
+
+  .admin-limited-edition-panel {
+    @apply rounded-xl border border-dashed border-ink/25 bg-stone-50/80 p-4;
+  }
+
+  .home-limited-edition {
+    @apply border-y border-ink/10 bg-stone-900 text-white;
+  }
+
+  .home-limited-edition-inner {
+    @apply grid gap-10 py-14 lg:grid-cols-[minmax(0,1fr)_1.4fr] lg:items-center lg:gap-12;
+  }
+
+  .home-limited-edition-grid {
+    @apply lg:grid-cols-2;
+  }
+
   /* Announcement ticker */
   .announcement-bar {
     @apply border-b border-stone-200 bg-white text-stone-600;

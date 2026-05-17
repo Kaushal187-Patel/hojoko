@@ -8,6 +8,7 @@ import AdminLayout from '@/components/ui/AdminLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { categoryService, productService } from '@/services';
 import { getProductImage } from '@/utils/helpers';
+import { getLimitedEditionStats, toDatetimeLocalValue } from '@/utils/limitedEdition';
 
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
@@ -21,6 +22,10 @@ const emptyProduct = {
   brand: '',
   category: '',
   images: [''],
+  isLimitedEdition: false,
+  limitedEditionRun: '',
+  limitedEditionEndsAt: '',
+  limitedEditionStory: '',
 };
 
 const toFormField = (value) => (value == null || value === '' ? '' : String(value));
@@ -35,6 +40,10 @@ const productToForm = (product) => ({
   brand: product.brand ?? '',
   category: product.category?._id || product.category || '',
   images: product.images?.length ? [...product.images] : [''],
+  isLimitedEdition: Boolean(product.isLimitedEdition),
+  limitedEditionRun: toFormField(product.limitedEditionRun),
+  limitedEditionEndsAt: toDatetimeLocalValue(product.limitedEditionEndsAt),
+  limitedEditionStory: product.limitedEditionStory ?? '',
 });
 
 const createEmptyForm = () => ({ ...emptyProduct, images: [''] });
@@ -77,6 +86,13 @@ export default function AdminProductsPage() {
       comparePrice: form.comparePrice ? Number(form.comparePrice) : undefined,
       stock: Number(form.stock),
       images: form.images.filter(Boolean),
+      isLimitedEdition: Boolean(form.isLimitedEdition),
+      limitedEditionRun: form.isLimitedEdition ? Number(form.limitedEditionRun) : undefined,
+      limitedEditionEndsAt:
+        form.isLimitedEdition && form.limitedEditionEndsAt
+          ? new Date(form.limitedEditionEndsAt).toISOString()
+          : undefined,
+      limitedEditionStory: form.isLimitedEdition ? form.limitedEditionStory : '',
     };
 
     try {
@@ -178,6 +194,75 @@ export default function AdminProductsPage() {
                 </option>
               ))}
             </select>
+            <div className="admin-limited-edition-panel md:col-span-2">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  className="mt-1 h-4 w-4 accent-ink"
+                  checked={Boolean(form.isLimitedEdition)}
+                  onChange={(event) =>
+                    setForm({
+                      ...form,
+                      isLimitedEdition: event.target.checked,
+                      limitedEditionRun: event.target.checked && !form.limitedEditionRun ? form.stock || '50' : form.limitedEditionRun,
+                    })
+                  }
+                />
+                <span>
+                  <span className="block font-medium text-ink">Limited Edition drop</span>
+                  <span className="mt-1 block text-sm text-stone-500">
+                    Shows a numbered run, live scarcity meter, and optional countdown — different from a normal sale badge.
+                  </span>
+                </span>
+              </label>
+
+              {form.isLimitedEdition ? (
+                <div className="mt-4 grid gap-4 border-t border-stone-200 pt-4 md:grid-cols-2">
+                  <div>
+                    <label className="field-label" htmlFor="limited-edition-run">
+                      Total pieces in this run
+                    </label>
+                    <input
+                      id="limited-edition-run"
+                      className="input-field mt-2"
+                      type="number"
+                      min="1"
+                      placeholder="e.g. 50"
+                      value={form.limitedEditionRun ?? ''}
+                      onChange={(event) => setForm({ ...form, limitedEditionRun: event.target.value })}
+                      required
+                    />
+                    <p className="mt-1 text-xs text-stone-500">Stock left = pieces still available from this run.</p>
+                  </div>
+                  <div>
+                    <label className="field-label" htmlFor="limited-edition-ends">
+                      Drop ends (optional)
+                    </label>
+                    <input
+                      id="limited-edition-ends"
+                      className="input-field mt-2"
+                      type="datetime-local"
+                      value={form.limitedEditionEndsAt ?? ''}
+                      onChange={(event) => setForm({ ...form, limitedEditionEndsAt: event.target.value })}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="field-label" htmlFor="limited-edition-story">
+                      Curator note (optional)
+                    </label>
+                    <textarea
+                      id="limited-edition-story"
+                      className="input-field mt-2 min-h-20"
+                      maxLength={220}
+                      placeholder="e.g. Woven in a single batch — each piece is finished by hand in our Ahmedabad studio."
+                      value={form.limitedEditionStory ?? ''}
+                      onChange={(event) => setForm({ ...form, limitedEditionStory: event.target.value })}
+                    />
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
             <p className="md:col-span-2 text-sm text-slate-500">
               Product rating and review count are calculated automatically from live customer feedback.
             </p>
@@ -316,9 +401,24 @@ export default function AdminProductsPage() {
                       <Image src={getProductImage(product)} alt={product.name} fill className="object-cover" sizes="64px" />
                     </div>
                     <div>
-                      <p className="font-semibold">{product.name}</p>
+                      <p className="font-semibold">
+                        {product.name}
+                        {product.isLimitedEdition ? (
+                          <span className="ml-2 inline-block rounded-full bg-ink px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white">
+                            Limited
+                          </span>
+                        ) : null}
+                      </p>
                       <p className="text-sm text-slate-500">{product.category?.name || 'No category'}</p>
                       <p className="text-sm text-slate-500">{product.shortDescription || product.description || 'No description'}</p>
+                      {(() => {
+                        const edition = getLimitedEditionStats(product);
+                        return edition ? (
+                          <p className="mt-1 text-xs font-medium text-stone-600">
+                            Edition · {edition.remaining}/{edition.total} left
+                          </p>
+                        ) : null;
+                      })()}
                     </div>
                   </div>
                   <div className="flex gap-2">

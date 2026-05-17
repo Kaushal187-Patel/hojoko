@@ -10,6 +10,8 @@ import StarRating from '@/components/StarRating';
 import { addToCart, openCartDrawer } from '@/redux/slices/cartSlice';
 import { selectIsWishlisted, toggleWishlistItem } from '@/redux/slices/wishlistSlice';
 import ShareProductButton from '@/components/product/ShareProductButton';
+import LimitedEditionBadge from '@/components/product/LimitedEditionBadge';
+import { getLimitedEditionStats } from '@/utils/limitedEdition';
 import { formatCurrency, formatReviewCount, getProductImage, getProductUrl } from '@/utils/helpers';
 import { useScrollReveal } from '@/hooks/useInView';
 import { cn } from '@/utils/cn';
@@ -35,6 +37,7 @@ export default function ProductCard({
   const rating = product.rating || 0;
   const reviewLabel = formatReviewCount(product.numReviews);
   const showMrp = product.comparePrice && product.comparePrice > product.price;
+  const editionStats = getLimitedEditionStats(product);
   const { ref, visible, enterFrom } = useScrollReveal({ rootMargin: '0px 0px -5% 0px', once: false });
 
   const handleWishlist = (event) => {
@@ -74,7 +77,7 @@ export default function ProductCard({
   };
 
   const cardBody = (
-    <article className="product-card">
+    <article className={cn('product-card', product.isLimitedEdition && 'product-card-is-limited')}>
       <div className="product-card-image">
         <Image
           src={getProductImage(product)}
@@ -84,7 +87,14 @@ export default function ProductCard({
           sizes="(max-width: 768px) 50vw, 25vw"
           className="object-cover motion-image-zoom"
         />
-        {isNew && <span className="badge-new">New</span>}
+        {product.isLimitedEdition ? (
+          <LimitedEditionBadge product={product} />
+        ) : isNew ? (
+          <span className="badge-new">New</span>
+        ) : null}
+        {editionStats && !editionStats.isSoldOut ? (
+          <span className="product-card-edition-ring" style={{ '--edition-sold': `${editionStats.percentSold}%` }} aria-hidden />
+        ) : null}
       </div>
 
       <div className="product-card-body">
