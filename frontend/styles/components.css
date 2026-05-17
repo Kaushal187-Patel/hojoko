@@ -403,6 +403,22 @@
     @apply link-underline inline-block text-sm;
   }
 
+  .site-footer-social {
+    @apply mt-6 flex flex-wrap items-center gap-2.5;
+  }
+
+  .site-footer-social-link {
+    @apply flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 text-ink transition hover:border-ink hover:bg-stone-50;
+  }
+
+  .site-footer-social-link svg {
+    @apply h-[18px] w-[18px];
+  }
+
+  .site-footer-email {
+    @apply footer-link mt-4 inline-block text-sm;
+  }
+
   .site-footer-bar {
     @apply border-t border-stone-200;
   }

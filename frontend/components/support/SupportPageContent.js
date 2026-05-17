@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import ScrollReveal from '@/components/motion/ScrollReveal';
 import useClientAuth from '@/hooks/useClientAuth';
 import { isAdminUser } from '@/utils/auth';
@@ -193,8 +194,10 @@ const faqs = [
 ];
 
 export default function SupportPageContent() {
+  const pathname = usePathname();
   const { user, isAuthenticated, ready } = useClientAuth();
   const accountHref = isAdminUser(user) ? '/admin' : '/dashboard';
+  const signInHref = `${pathname}?auth=login`;
 
   return (
     <div className="page-shell support-page">
@@ -258,7 +261,7 @@ export default function SupportPageContent() {
                 </Link>
               </>
             ) : ready ? (
-              <Link href="/?auth=login" className="btn-primary" scroll={false}>
+              <Link href={signInHref} className="btn-primary" scroll={false}>
                 Sign in for order help
               </Link>
             ) : (
@@ -285,16 +288,31 @@ export default function SupportPageContent() {
                 Browse categories
               </Link>
             </li>
-            <li>
-              <Link href="/profile" className="footer-link">
-                Profile & addresses
-              </Link>
-            </li>
-            <li>
-              <Link href="/wishlist" className="footer-link">
-                Wishlist
-              </Link>
-            </li>
+            {isAuthenticated ? (
+              <>
+                <li>
+                  <Link href="/orders" className="footer-link">
+                    Your orders
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/profile" className="footer-link">
+                    Profile & addresses
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/wishlist" className="footer-link">
+                    Wishlist
+                  </Link>
+                </li>
+              </>
+            ) : ready ? (
+              <li>
+                <Link href={signInHref} className="footer-link" scroll={false}>
+                  Sign in
+                </Link>
+              </li>
+            ) : null}
             <li>
               <Link href="/forgot-password" className="footer-link">
                 Reset password

@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import useClientAuth from '@/hooks/useClientAuth';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import StarRating from '@/components/StarRating';
 import { reviewService } from '@/services';
@@ -32,7 +32,7 @@ function InteractiveStars({ value, onChange }) {
 export default function ProductReviews({ productId, onRatingUpdate }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useSelector((state) => state.auth);
+  const { storeUser: user, isAuthenticated, ready } = useClientAuth();
 
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -137,7 +137,7 @@ export default function ProductReviews({ productId, onRatingUpdate }) {
     }
   };
 
-  const showForm = user && eligibility && (eligibility.canReview || eligibility.hasReviewed);
+  const showForm = isAuthenticated && eligibility && (eligibility.canReview || eligibility.hasReviewed);
 
   return (
     <section id="reviews" className="container-page border-t border-stone-200 py-12">
@@ -169,9 +169,9 @@ export default function ProductReviews({ productId, onRatingUpdate }) {
             ) : null}
           </div>
         </form>
-      ) : user && eligibility && !eligibility.hasPurchased ? (
+      ) : ready && isAuthenticated && eligibility && !eligibility.hasPurchased ? (
         <p className="body-muted mt-4">Purchase this product to leave a review.</p>
-      ) : !user ? (
+      ) : ready && !isAuthenticated ? (
         <p className="body-muted mt-4">Sign in after purchase to share your feedback.</p>
       ) : null}
 

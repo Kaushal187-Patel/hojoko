@@ -38,7 +38,7 @@ export default function ProductCard({
   const reviewLabel = formatReviewCount(product.numReviews);
   const showMrp = product.comparePrice && product.comparePrice > product.price;
   const editionStats = getLimitedEditionStats(product);
-  const { ref, visible, enterFrom } = useScrollReveal({ rootMargin: '0px 0px -5% 0px', once: false });
+  const { ref, visible, enterFrom } = useScrollReveal({ rootMargin: '0px 0px -5% 0px', once: true });
 
   const handleWishlist = (event) => {
     event.preventDefault();

@@ -9,7 +9,7 @@ export default function ScrollReveal({
   as: Component = 'div',
   delay = 0,
   variant = 'scroll',
-  once = false,
+  once = true,
 }) {
   const { ref, visible, enterFrom } = useScrollReveal({ once });
   const Tag = Component;

@@ -20,8 +20,11 @@ export default function CartPage() {
   const [selectedAddress, setSelectedAddress] = useState(null);
 
   useEffect(() => {
+    if (cart !== null) {
+      return;
+    }
     dispatch(fetchCart());
-  }, [dispatch]);
+  }, [cart, dispatch]);
 
   const handleQuantityChange = async (itemId, quantity) => {
     const result = await dispatch(updateCartItem({ id: itemId, quantity }));

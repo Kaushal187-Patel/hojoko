@@ -17,11 +17,12 @@ export default function AuthBootstrap({ children }) {
 
     hasBootstrapped.current = true;
 
+    dispatch(fetchCart());
+
     dispatch(fetchCurrentUser())
       .unwrap()
       .then((user) => {
         dispatch(hydrateWishlist(user?._id || null));
-        return dispatch(fetchCart());
       })
       .catch(() => {
         dispatch(hydrateWishlist(null));

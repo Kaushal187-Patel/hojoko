@@ -16,6 +16,9 @@ import { formatUserAddress } from '@/utils/helpers';
 import { cn } from '@/utils/cn';
 import toast from 'react-hot-toast';
 
+let cachedCategories = null;
+let categoriesRequest = null;
+
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 shrink-0" aria-hidden>
@@ -160,21 +163,28 @@ export default function Navbar() {
   const accountHref = adminUser ? '/admin' : '/dashboard';
 
   useEffect(() => {
-    if (!ready) return;
-    dispatch(hydrateWishlist(storeUser?._id || null));
-  }, [dispatch, ready, storeUser]);
-
-  useEffect(() => {
     if (pathname === '/products') {
       setQuery(searchParams.get('search') || '');
     }
   }, [pathname, searchParams]);
 
   useEffect(() => {
-    categoryService
-      .getAll()
-      .then(({ data }) => setCategories(data.categories || []))
-      .catch(() => setCategories([]));
+    if (cachedCategories) {
+      setCategories(cachedCategories);
+      return;
+    }
+
+    if (!categoriesRequest) {
+      categoriesRequest = categoryService
+        .getAll()
+        .then(({ data }) => data.categories || [])
+        .catch(() => []);
+    }
+
+    categoriesRequest.then((list) => {
+      cachedCategories = list;
+      setCategories(list);
+    });
   }, []);
 
   useEffect(() => {
