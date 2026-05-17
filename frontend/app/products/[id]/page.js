@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { productService } from '@/services';
 import { getProductUrl } from '@/utils/helpers';
+import { addRecentlyViewed } from '@/utils/recentlyViewed';
 
 export default function LegacyProductRedirectPage() {
   const params = useParams();
@@ -15,6 +16,7 @@ export default function LegacyProductRedirectPage() {
     productService
       .getById(params.id)
       .then(({ data }) => {
+        addRecentlyViewed(data.product);
         router.replace(getProductUrl(data.product));
       })
       .catch(() => {

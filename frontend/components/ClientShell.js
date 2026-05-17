@@ -6,6 +6,7 @@ import AnnouncementBar from '@/components/AnnouncementBar';
 import AuthBootstrap from '@/components/AuthBootstrap';
 import AuthModalGate from '@/components/auth/AuthModalGate';
 import CartDrawer from '@/components/CartDrawer';
+import CookieConsent from '@/components/CookieConsent';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import StoreProvider from '@/redux/StoreProvider';
@@ -26,6 +27,7 @@ export default function ClientShell({ children }) {
         <AuthModalGate />
         <CartDrawer />
         <Footer />
+        <CookieConsent />
         <Toaster position="top-right" />
       </AuthBootstrap>
     </StoreProvider>

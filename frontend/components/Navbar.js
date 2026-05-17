@@ -100,6 +100,14 @@ function LocationIcon() {
   );
 }
 
+function HeaderCountBadge({ count, show }) {
+  if (!show || count <= 0) {
+    return null;
+  }
+
+  return <span className="cart-badge">{count}</span>;
+}
+
 function HeaderIconAction({ href, onClick, label, icon, badge, scroll = true, className }) {
   const actionClass = cn('header-icon-action', className);
 
@@ -140,6 +148,13 @@ export default function Navbar() {
   const [query, setQuery] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [categories, setCategories] = useState([]);
+  const [clientReady, setClientReady] = useState(false);
+
+  useEffect(() => {
+    setClientReady(true);
+  }, []);
+
+  const showBadges = clientReady;
 
   const signInHref = `${pathname}?auth=login`;
   const accountHref = adminUser ? '/admin' : '/dashboard';
@@ -208,14 +223,14 @@ export default function Navbar() {
             label="Wishlist"
             icon={<WishlistIcon />}
             className="header-icon-compact"
-            badge={wishlistCount > 0 ? <span className="cart-badge">{wishlistCount}</span> : null}
+            badge={<HeaderCountBadge count={wishlistCount} show={showBadges} />}
           />
           <HeaderIconAction
             href="/cart"
             label="Cart"
             icon={<CartIcon />}
             className="header-icon-compact"
-            badge={cartCount > 0 ? <span className="cart-badge">{cartCount}</span> : null}
+            badge={<HeaderCountBadge count={cartCount} show={showBadges} />}
           />
         </div>
       </div>
@@ -285,13 +300,13 @@ export default function Navbar() {
             href="/wishlist"
             label="Wishlist"
             icon={<WishlistIcon />}
-            badge={wishlistCount > 0 ? <span className="cart-badge">{wishlistCount}</span> : null}
+            badge={<HeaderCountBadge count={wishlistCount} show={showBadges} />}
           />
           <HeaderIconAction
             href="/cart"
             label="Cart"
             icon={<CartIcon />}
-            badge={cartCount > 0 ? <span className="cart-badge">{cartCount}</span> : null}
+            badge={<HeaderCountBadge count={cartCount} show={showBadges} />}
           />
         </div>
       </div>

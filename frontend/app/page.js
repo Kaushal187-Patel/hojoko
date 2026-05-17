@@ -1,6 +1,7 @@
 import HomeCategories from '@/components/HomeCategories';
 import HomeHero from '@/components/HomeHero';
 import HomeLimitedEdition from '@/components/home/HomeLimitedEdition';
+import HomeRecentlyViewed from '@/components/home/HomeRecentlyViewed';
 import PromoBand from '@/components/home/PromoBand';
 import { getCategories, getHeroSlides, getLimitedEditionProducts } from '@/utils/serverApi';
 
@@ -14,8 +15,9 @@ export default async function HomePage() {
   return (
     <>
       <HomeHero slides={heroSlides} />
-      <HomeLimitedEdition products={limitedEdition} />
       <HomeCategories categories={categories} />
+      <HomeRecentlyViewed />
+      <HomeLimitedEdition products={limitedEdition} />
       <PromoBand />
     </>
   );
