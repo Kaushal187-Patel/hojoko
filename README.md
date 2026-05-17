@@ -190,22 +190,105 @@ After running the seed script:
 - `NEXT_PUBLIC_API_URL`
 - `NEXT_PUBLIC_RAZORPAY_KEY_ID`
 
-## Deployment
+## Deployment (Render + custom domain)
 
-### Frontend
-Deploy the `frontend` app to Vercel.
+This app uses **two Web Services** on [Render](https://render.com): the Next.js storefront and the Express API. Use **MongoDB Atlas** for the database.
 
-Set:
-- `NEXT_PUBLIC_API_URL`
-- `NEXT_PUBLIC_RAZORPAY_KEY_ID`
+### 1. MongoDB Atlas
 
-### Backend
-Deploy the `backend` app to Render or Railway.
+1. Create a free cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas).
+2. Database Access → create a user and password.
+3. Network Access → allow `0.0.0.0/0` (or Render’s IPs if you restrict later).
+4. Connect → copy the connection string into `MONGODB_URI` (replace `<password>`).
 
-Set all backend environment variables and point `CLIENT_URL` to your deployed frontend URL.
+### 2. Push code to GitHub
 
-### Database
-Use MongoDB Atlas and place the connection string in `MONGODB_URI`.
+Render deploys from Git. Push this repo to GitHub (do not commit `.env` files).
+
+### 3. Deploy with Blueprint (recommended)
+
+1. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint**.
+2. Connect the GitHub repo.
+3. Render reads `render.yaml` and creates `hozoko-api` and `hozoko-web`.
+4. When prompted, set **secret** environment variables (see tables below).
+
+**Or deploy manually:** New → **Web Service** twice (one for `backend/`, one for `frontend/`) with the build/start commands from `render.yaml`.
+
+| Service | Root directory | Build command | Start command |
+|---------|----------------|---------------|---------------|
+| API | `backend` | `npm install` | `npm start` |
+| Web | `frontend` | `npm install && npm run build` | `npm start` |
+
+### 4. Environment variables on Render
+
+**`hozoko-api` (backend)**
+
+| Variable | Example |
+|----------|---------|
+| `NODE_ENV` | `production` |
+| `MONGODB_URI` | Atlas connection string |
+| `JWT_SECRET` | long random string |
+| `CLIENT_URL` | `https://www.yourdomain.com` (comma-separated if you use www + apex) |
+| `RAZORPAY_KEY_ID` | live or test key |
+| `RAZORPAY_KEY_SECRET` | Razorpay secret |
+| `RESEND_API_KEY` | for forgot-password email |
+| `RESEND_FROM` | `HOZOKO <noreply@yourdomain.com>` (verified domain in Resend) |
+
+**`hozoko-web` (frontend)**
+
+| Variable | Example |
+|----------|---------|
+| `NEXT_PUBLIC_API_URL` | `https://api.yourdomain.com/api` |
+| `NEXT_PUBLIC_SITE_URL` | `https://www.yourdomain.com` |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` | same public key as Razorpay |
+
+Use Render’s default URLs first (`https://hozoko-web.onrender.com`, `https://hozoko-api.onrender.com`), then switch to your domain after DNS is ready.
+
+### 5. Custom domain
+
+Buy a domain (Namecheap, GoDaddy, Cloudflare, etc.), then in Render:
+
+**Storefront (`hozoko-web`)** → Settings → **Custom Domains**
+
+- Add `www.yourdomain.com`
+- Add `yourdomain.com` (apex)
+- Render shows DNS records (usually CNAME). Add them at your registrar.
+- Enable **Redirect** so apex → `www` (or the opposite—pick one canonical URL).
+
+**API (`hozoko-api`)** → Custom Domains
+
+- Add `api.yourdomain.com` (subdomain CNAME to Render).
+
+Update env vars:
+
+- `CLIENT_URL` = `https://www.yourdomain.com,https://yourdomain.com` (both if you use both)
+- `NEXT_PUBLIC_API_URL` = `https://api.yourdomain.com/api`
+- `NEXT_PUBLIC_SITE_URL` = `https://www.yourdomain.com`
+
+Redeploy both services after changing env vars.
+
+### 6. Razorpay & email (production)
+
+- Razorpay dashboard → use **live** keys in production; add your domain to allowed origins if required.
+- Resend → verify `yourdomain.com` and set `RESEND_FROM` to that domain.
+
+### 7. Seed production (optional)
+
+In Render → `hozoko-api` → **Shell**:
+
+```bash
+npm run seed
+```
+
+### Notes
+
+- **Uploads:** Admin product images are stored on the server disk; on Render they can be lost on redeploy. For production, plan cloud storage (S3, Cloudinary) later.
+- **Free tier:** Services sleep after inactivity; first visit may be slow.
+- **HTTPS:** Render provides SSL for `*.onrender.com` and custom domains automatically.
+
+### Health check
+
+API: `GET https://api.yourdomain.com/api/health` → `{ "success": true }`
 
 ## Security Notes
 
