@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminLayout from '@/components/ui/AdminLayout';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { heroService } from '@/services';
 import { getHeroSlideImage } from '@/utils/helpers';
 
