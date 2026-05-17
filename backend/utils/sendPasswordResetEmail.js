@@ -59,7 +59,11 @@ async function sendViaResend(to, resetUrl) {
   if (!res.ok) {
     const body = await res.text();
     console.error('[sendPasswordResetEmail] Resend error:', res.status, body);
-    return false;
+    throw new Error(`Resend API ${res.status}: ${body}`);
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[sendPasswordResetEmail] Sent via Resend to', to);
   }
 
   return true;
@@ -105,8 +109,8 @@ async function sendViaSmtp(to, resetUrl) {
  */
 async function sendPasswordResetEmail(to, resetUrl) {
   try {
-    if (process.env.RESEND_API_KEY) {
-      return sendViaResend(to, resetUrl);
+    if (process.env.RESEND_API_KEY?.trim()) {
+      return await sendViaResend(to, resetUrl);
     }
 
     if (process.env.SMTP_HOST) {
@@ -114,6 +118,7 @@ async function sendPasswordResetEmail(to, resetUrl) {
       return true;
     }
 
+    console.warn('[sendPasswordResetEmail] No RESEND_API_KEY or SMTP_HOST configured.');
     return false;
   } catch (error) {
     console.error('[sendPasswordResetEmail]', error.message || error);

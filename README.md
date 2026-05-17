@@ -119,12 +119,24 @@ cd hojoko
 
 ### 2. Configure the backend
 
-```bash
-cd backend
-cp .env.example .env
+Create `backend/.env` with at least:
+
+```env
+NODE_ENV=development
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_long_random_secret
+JWT_EXPIRE=7d
+CLIENT_URL=http://localhost:3000
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM=HOZOKO <onboarding@resend.dev>
+RAZORPAY_KEY_ID=your_razorpay_key
+RAZORPAY_KEY_SECRET=your_razorpay_secret
 ```
 
-Update `backend/.env` with your MongoDB URI, JWT secret, `CLIENT_URL` (use `http://localhost:3000` for local Next.js), Razorpay credentials, and for **forgot password emails** your Resend API key (see `backend/.env.example`).
+```bash
+cd backend
+```
 
 Install dependencies and seed demo data:
 
@@ -138,14 +150,19 @@ The API runs on `http://localhost:5000`. In **development**, after a successful 
 
 ### 3. Configure the frontend
 
+Create `frontend/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key
+```
+
 Open a new terminal:
 
 ```bash
 cd frontend
-cp .env.example .env.local
 ```
-
-Set `NEXT_PUBLIC_API_URL` to your backend API URL and add your Razorpay public key.
 
 Install dependencies and start the app:
 
@@ -205,14 +222,12 @@ This app uses **two Web Services** on [Render](https://render.com): the Next.js 
 
 Render deploys from Git. Push this repo to GitHub (do not commit `.env` files).
 
-### 3. Deploy with Blueprint (recommended)
+### 3. Deploy on Render (manual)
 
-1. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint**.
-2. Connect the GitHub repo.
-3. Render reads `render.yaml` and creates `hozoko-api` and `hozoko-web`.
-4. When prompted, set **secret** environment variables (see tables below).
-
-**Or deploy manually:** New → **Web Service** twice (one for `backend/`, one for `frontend/`) with the build/start commands from `render.yaml`.
+1. [Render Dashboard](https://dashboard.render.com) → **New** → **Web Service** (create **two** services).
+2. Connect your GitHub repo.
+3. Set **root directory**, **build**, and **start** commands as below.
+4. Add **environment variables** in the Render dashboard (not in Git)—see tables below.
 
 | Service | Root directory | Build command | Start command |
 |---------|----------------|---------------|---------------|
@@ -295,7 +310,7 @@ API: `GET https://api.yourdomain.com/api/health` → `{ "success": true }`
 - Passwords are hashed with bcryptjs.
 - Protected routes use JWT stored in HTTP-only cookies.
 - Helmet and rate limiting are enabled on the API.
-- Do not commit `.env` files. Only commit `.env.example`.
+- Do not commit `.env` or `.env.local` files (they contain secrets).
 
 ## Repository
 

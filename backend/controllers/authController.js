@@ -134,7 +134,7 @@ const forgotPassword = async (req, res, next) => {
     if (process.env.NODE_ENV !== 'production') {
       console.log('[forgot-password] Local — paste reset URL:', resetUrl);
       if (!sent) {
-        console.warn('[forgot-password] Email did not send. Put RESEND_API_KEY in backend/.env (copy backend/.env.example).');
+        console.warn('[forgot-password] Email did not send. Set RESEND_API_KEY in backend/.env.');
       }
     } else if (!sent) {
       console.error(
