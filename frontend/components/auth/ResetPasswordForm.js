@@ -10,7 +10,7 @@ import PasswordInput from '@/components/auth/PasswordInput';
 import { fetchCurrentUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
 import { authService } from '@/services';
-import { isAdminUser } from '@/utils/auth';
+import { getAdminHomePath } from '@/utils/auth';
 import { validatePasswordPair } from '@/utils/passwordValidation';
 import { SITE_TAGLINE } from '@/utils/brand';
 
@@ -46,7 +46,7 @@ export default function ResetPasswordForm() {
       await dispatch(fetchCurrentUser());
       await dispatch(fetchCart());
       const user = data.user;
-      router.push(user && isAdminUser(user) ? '/admin' : '/dashboard');
+      router.push(user ? getAdminHomePath(user) : '/dashboard');
       router.refresh();
     } catch (error) {
       toast.error(error.message || 'Reset failed');

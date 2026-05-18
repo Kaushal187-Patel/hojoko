@@ -10,7 +10,7 @@ import { logoutUser } from '@/redux/slices/authSlice';
 import { clearCartState } from '@/redux/slices/cartSlice';
 import { hydrateWishlist, selectWishlistItems } from '@/redux/slices/wishlistSlice';
 import { categoryService, userService } from '@/services';
-import { isAdminUser } from '@/utils/auth';
+import { getAccountPath, isMainAdmin } from '@/utils/auth';
 import { resolveSelectedAddress } from '@/utils/address';
 import { formatUserAddress } from '@/utils/helpers';
 import { cn } from '@/utils/cn';
@@ -147,7 +147,8 @@ export default function Navbar() {
   const wishlistItems = useSelector(selectWishlistItems);
   const cartCount = cart?.totalItems || 0;
   const wishlistCount = wishlistItems.length;
-  const adminUser = isAdminUser(user);
+  const adminUser = isMainAdmin(user);
+  const accountHref = getAccountPath(user);
   const [query, setQuery] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [categories, setCategories] = useState([]);
@@ -160,7 +161,6 @@ export default function Navbar() {
   const showBadges = clientReady;
 
   const signInHref = `${pathname}?auth=login`;
-  const accountHref = adminUser ? '/admin' : '/dashboard';
 
   useEffect(() => {
     if (pathname === '/products') {

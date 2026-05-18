@@ -8,7 +8,7 @@ const activateAdmin = async () => {
   await connectDB();
 
   const result = await User.updateMany(
-    { role: 'admin' },
+    { role: { $in: ['admin', 'mainAdmin'] } },
     { $set: { isActive: true } }
   );
 

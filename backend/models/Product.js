@@ -89,6 +89,11 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -96,6 +101,8 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+productSchema.index({ seller: 1, isActive: 1 });
 
 productSchema.index({ name: 'text', description: 'text', shortDescription: 'text', brand: 'text' });
 productSchema.index({ slug: 1 });

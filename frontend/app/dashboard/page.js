@@ -7,12 +7,13 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { orderService } from '@/services';
 import { formatCurrency } from '@/utils/helpers';
-import { isAdminUser } from '@/utils/auth';
+import { getAdminHomePath, isMainAdmin, isPanelAdmin } from '@/utils/auth';
 
 export default function DashboardPage() {
   const { user } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
-  const adminUser = isAdminUser(user);
+  const panelAdmin = isPanelAdmin(user);
+  const panelHref = getAdminHomePath(user);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,9 +32,9 @@ export default function DashboardPage() {
             <h1 className="page-title">Welcome, {user?.name}</h1>
             <p className="page-subtitle">Manage your shopping activity from one place.</p>
           </div>
-          {adminUser && (
-            <Link href="/admin" className="btn-primary w-full md:w-auto">
-              Open admin dashboard
+          {panelAdmin && (
+            <Link href={panelHref} className="btn-primary w-full md:w-auto">
+              {isMainAdmin(user) ? 'Open main admin dashboard' : 'Open seller dashboard'}
             </Link>
           )}
         </div>

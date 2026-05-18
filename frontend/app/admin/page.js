@@ -9,6 +9,7 @@ import { formatCurrency } from '@/utils/helpers';
 
 const emptyAnalytics = {
   totalUsers: 0,
+  totalSellers: 0,
   totalProducts: 0,
   totalOrders: 0,
   totalRevenue: 0,
@@ -48,7 +49,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <ProtectedRoute adminOnly>
+    <ProtectedRoute mainAdminOnly>
       <AdminLayout title="Admin dashboard" description="Monitor store performance and recent activity.">
 
           {loading ? (
@@ -65,6 +66,10 @@ export default function AdminDashboardPage() {
                 <div className="card">
                   <p className="card-label">Users</p>
                   <p className="card-value">{analytics.totalUsers}</p>
+                </div>
+                <div className="card">
+                  <p className="card-label">Sellers</p>
+                  <p className="card-value">{analytics.totalSellers}</p>
                 </div>
                 <div className="card">
                   <p className="card-label">Products</p>

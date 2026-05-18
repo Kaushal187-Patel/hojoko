@@ -11,6 +11,7 @@ export const authService = {
 
 export const productService = {
   getAll: (params) => api.get('/products', { params }),
+  getAdminList: (params) => api.get('/products/admin/list', { params }),
   getById: (id) => api.get(`/products/${id}`),
   getBySlug: (categorySlug, productSlug) => api.get(`/products/by-slug/${categorySlug}/${productSlug}`),
   uploadImage: (file) => {
@@ -53,6 +54,8 @@ export const userService = {
 
 export const adminService = {
   getAnalytics: () => api.get('/admin/analytics'),
+  getSellers: () => api.get('/admin/sellers'),
+  createSeller: (data) => api.post('/admin/sellers', data),
   getUsers: () => api.get('/admin/users'),
   updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),

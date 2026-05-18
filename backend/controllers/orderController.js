@@ -10,7 +10,8 @@ const { normalizeShippingAddress, validateAddressPayload } = require('../utils/a
 // @route   GET /api/orders
 const getOrders = async (req, res, next) => {
   try {
-    const filter = req.user.role === 'admin' ? {} : { user: req.user._id };
+    const isAdmin = ['admin', 'mainAdmin'].includes(req.user.role);
+    const filter = isAdmin ? {} : { user: req.user._id };
 
     const orders = await Order.find(filter)
       .populate('user', 'name email')
@@ -35,7 +36,8 @@ const getOrderById = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    if (req.user.role !== 'admin' && order.user._id.toString() !== req.user._id.toString()) {
+    const isAdmin = ['admin', 'mainAdmin'].includes(req.user.role);
+    if (!isAdmin && order.user._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 

@@ -163,7 +163,7 @@ export default function AdminHeroPage() {
   };
 
   return (
-    <ProtectedRoute adminOnly>
+    <ProtectedRoute mainAdminOnly>
       <AdminLayout
         title="Homepage hero"
         description="Add as many full-width carousel images as you need. Upload an image, then save each slide."

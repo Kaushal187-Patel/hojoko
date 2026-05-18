@@ -50,7 +50,7 @@ const seed = async () => {
     name: 'HOZOKO Admin',
     email: ADMIN_USERNAME,
     password: ADMIN_PASSWORD,
-    role: 'admin',
+    role: 'mainAdmin',
     phone: '9999999999',
     isActive: true,
   });

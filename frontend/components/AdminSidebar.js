@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/utils/cn';
 
-const links = [
+const mainAdminLinks = [
   { href: '/admin', label: 'Overview' },
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/products', label: 'Products' },
   { href: '/admin/hero', label: 'Homepage hero' },
   { href: '/admin/orders', label: 'Orders' },
+  { href: '/admin/sellers', label: 'Sellers' },
   { href: '/admin/users', label: 'Users' },
 ];
 
@@ -18,8 +19,8 @@ export default function AdminSidebar() {
 
   return (
     <aside className="card h-fit space-y-2 p-4">
-      <p className="admin-nav-label">Admin Panel</p>
-      {links.map((link) => (
+      <p className="admin-nav-label">Main Admin</p>
+      {mainAdminLinks.map((link) => (
         <Link
           key={link.href}
           href={link.href}

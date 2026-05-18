@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { loginUser } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
 import PasswordInput from '@/components/auth/PasswordInput';
-import { isAdminUser } from '@/utils/auth';
+import { getAdminHomePath } from '@/utils/auth';
 import { SITE_TAGLINE } from '@/utils/brand';
 
 export default function LoginForm() {
@@ -26,7 +26,7 @@ export default function LoginForm() {
     if (loginUser.fulfilled.match(result)) {
       toast.success('Welcome back');
       await dispatch(fetchCart());
-      router.push(isAdminUser(result.payload) ? '/admin' : '/dashboard');
+      router.push(getAdminHomePath(result.payload));
       router.refresh();
       return;
     }

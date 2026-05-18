@@ -54,7 +54,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <ProtectedRoute adminOnly>
+    <ProtectedRoute mainAdminOnly>
       <AdminLayout title="Manage users">
 
 {loading ? (
@@ -70,14 +70,14 @@ export default function AdminUsersPage() {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    {user.role !== 'admin' ? (
+                    {user.role === 'user' ? (
                       <button type="button" className="btn-secondary" onClick={() => toggleActive(user)}>
                         {user.isActive ? 'Deactivate' : 'Activate'}
                       </button>
                     ) : (
                       <span className="inline-flex items-center text-sm text-stone-500">Always active</span>
                     )}
-                    {user.role !== 'admin' && (
+                    {user.role === 'user' && (
                       <button
                         type="button"
                         className="btn-secondary text-red-600"

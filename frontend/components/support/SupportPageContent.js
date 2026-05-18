@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ScrollReveal from '@/components/motion/ScrollReveal';
 import useClientAuth from '@/hooks/useClientAuth';
-import { isAdminUser } from '@/utils/auth';
+import { getAccountPath } from '@/utils/auth';
 
 const quickTopics = [
   {
@@ -196,7 +196,7 @@ const faqs = [
 export default function SupportPageContent() {
   const pathname = usePathname();
   const { user, isAuthenticated, ready } = useClientAuth();
-  const accountHref = isAdminUser(user) ? '/admin' : '/dashboard';
+  const accountHref = getAccountPath(user);
   const signInHref = `${pathname}?auth=login`;
 
   return (

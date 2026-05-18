@@ -1,6 +1,8 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { generateUniqueSlug } = require('../utils/slug');
+const { isMainAdmin, isSellerAdmin } = require('../utils/roles');
+const { canAccessProduct } = require('../utils/productAccess');
 
 const ensureProductSlug = async (product) => {
   if (!product || product.slug) {
@@ -191,6 +193,36 @@ const uploadProductImage = async (req, res, next) => {
   }
 };
 
+// @desc    Admin list — all products (main admin) or seller's own
+// @route   GET /api/products/admin/list
+const getAdminProducts = async (req, res, next) => {
+  try {
+    const filter = {};
+
+    if (isSellerAdmin(req.user)) {
+      filter.$or = [{ seller: req.user._id }, { createdBy: req.user._id }];
+    }
+
+    if (req.query.categoryId) {
+      filter.category = req.query.categoryId;
+    } else if (req.query.category) {
+      const category = await Category.findOne({ slug: req.query.category });
+      if (category) {
+        filter.category = category._id;
+      }
+    }
+
+    const products = await Product.find(filter)
+      .populate('category', 'name slug')
+      .populate('seller', 'name email')
+      .sort(sortProducts);
+
+    res.json({ success: true, products });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Create product
 // @route   POST /api/products
 const createProduct = async (req, res, next) => {
@@ -198,14 +230,20 @@ const createProduct = async (req, res, next) => {
     const { rating, numReviews, ...productData } = req.body;
     const limitedEdition = normalizeLimitedEdition(productData);
     const count = await Product.countDocuments({ isActive: true, category: productData.category });
+    const sellerId = req.user._id;
     const product = await Product.create({
       ...productData,
       ...limitedEdition,
       rank: count,
-      createdBy: req.user._id,
+      seller: sellerId,
+      createdBy: sellerId,
     });
 
-    res.status(201).json({ success: true, product });
+    const populated = await Product.findById(product._id)
+      .populate('category', 'name slug')
+      .populate('seller', 'name email');
+
+    res.status(201).json({ success: true, product: populated });
   } catch (error) {
     next(error);
   }
@@ -222,6 +260,15 @@ const updateProduct = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
+    if (!canAccessProduct(existing, req.user)) {
+      return res.status(403).json({ success: false, message: 'Not authorized to update this product' });
+    }
+
+    if (isSellerAdmin(req.user)) {
+      delete productData.seller;
+      delete productData.createdBy;
+    }
+
     if (productData.category && productData.category.toString() !== existing.category.toString()) {
       const count = await Product.countDocuments({ isActive: true, category: productData.category });
       productData.rank = count;
@@ -233,7 +280,9 @@ const updateProduct = async (req, res, next) => {
     const product = await Product.findByIdAndUpdate(req.params.id, productData, {
       new: true,
       runValidators: true,
-    }).populate('category', 'name slug');
+    })
+      .populate('category', 'name slug')
+      .populate('seller', 'name email');
 
     res.json({ success: true, product });
   } catch (error) {
@@ -245,11 +294,17 @@ const updateProduct = async (req, res, next) => {
 // @route   DELETE /api/products/:id
 const deleteProduct = async (req, res, next) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
+
+    if (!canAccessProduct(product, req.user)) {
+      return res.status(403).json({ success: false, message: 'Not authorized to delete this product' });
+    }
+
+    await Product.findByIdAndDelete(req.params.id);
 
     const remaining = await Product.find({ isActive: true, category: product.category }).sort(sortProducts);
     await Promise.all(remaining.map((item, index) => Product.findByIdAndUpdate(item._id, { rank: index })));
@@ -272,6 +327,10 @@ const reorderProduct = async (req, res, next) => {
 
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    if (!canAccessProduct(product, req.user)) {
+      return res.status(403).json({ success: false, message: 'Not authorized to reorder this product' });
     }
 
     const products = await Product.find({ isActive: true, category: product.category }).sort(sortProducts);
@@ -309,6 +368,7 @@ module.exports = {
   getProducts,
   getProductBySlug,
   getProductById,
+  getAdminProducts,
   uploadProductImage,
   createProduct,
   updateProduct,

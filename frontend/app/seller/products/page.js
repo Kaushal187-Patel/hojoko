@@ -3,10 +3,10 @@
 import ProtectedRoute from '@/components/ProtectedRoute';
 import ProductManager from '@/components/admin/ProductManager';
 
-export default function AdminProductsPage() {
+export default function SellerProductsPage() {
   return (
-    <ProtectedRoute mainAdminOnly>
-      <ProductManager variant="main" />
+    <ProtectedRoute sellerOnly>
+      <ProductManager variant="seller" />
     </ProtectedRoute>
   );
 }

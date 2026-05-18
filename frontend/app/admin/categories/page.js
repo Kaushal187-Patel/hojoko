@@ -123,7 +123,7 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <ProtectedRoute adminOnly>
+    <ProtectedRoute mainAdminOnly>
       <AdminLayout title="Manage categories" description="Create categories with an uploaded image and show them on the home page.">
 
 <form onSubmit={handleSubmit} className="card mt-8 grid gap-4 md:grid-cols-2">

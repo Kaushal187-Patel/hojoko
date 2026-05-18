@@ -39,7 +39,7 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <ProtectedRoute adminOnly>
+    <ProtectedRoute mainAdminOnly>
       <AdminLayout title="Manage orders">
 
 {loading ? (

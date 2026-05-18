@@ -1,5 +1,8 @@
+const { isPanelAdmin } = require('../utils/roles');
+
+/** Allows main admin, seller admin, and legacy `admin` role. */
 const admin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
+  if (req.user && isPanelAdmin(req.user)) {
     return next();
   }
 

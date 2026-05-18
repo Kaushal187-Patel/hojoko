@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import useClientAuth from '@/hooks/useClientAuth';
 import Logo from '@/components/Logo';
 import { SITE_TAGLINE, SOCIAL_LINKS, SUPPORT_EMAIL } from '@/utils/brand';
-import { isAdminUser } from '@/utils/auth';
+import { getAccountPath, isPanelAdmin } from '@/utils/auth';
 
 function InstagramIcon() {
   return (
@@ -55,7 +55,7 @@ function getFooterLinks(user, signInHref) {
   if (user) {
     navigate.push(
       { href: '/orders', label: 'Orders' },
-      { href: isAdminUser(user) ? '/admin' : '/dashboard', label: 'Account' },
+      { href: getAccountPath(user), label: 'Account' },
       { href: '/profile', label: 'Profile' }
     );
   }

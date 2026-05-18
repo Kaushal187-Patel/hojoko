@@ -3,6 +3,7 @@ const {
   getProducts,
   getProductBySlug,
   getProductById,
+  getAdminProducts,
   uploadProductImage,
   createProduct,
   updateProduct,
@@ -16,6 +17,7 @@ const uploadProduct = require('../middleware/uploadProduct');
 const router = express.Router();
 
 router.get('/', getProducts);
+router.get('/admin/list', protect, admin, getAdminProducts);
 router.post('/upload', protect, admin, uploadProduct.single('image'), uploadProductImage);
 router.get('/by-slug/:categorySlug/:productSlug', getProductBySlug);
 router.patch('/:id/reorder', protect, admin, reorderProduct);
