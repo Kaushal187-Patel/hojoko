@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { generateUniqueSlug } = require('../utils/slug');
-const { isMainAdmin, isSellerAdmin } = require('../utils/roles');
+const { isSellerAdmin } = require('../utils/roles');
 const { canAccessProduct } = require('../utils/productAccess');
 
 const ensureProductSlug = async (product) => {
@@ -341,6 +341,16 @@ const reorderProduct = async (req, res, next) => {
     }
 
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+    if (isSellerAdmin(req.user) && targetIndex >= 0 && targetIndex < products.length) {
+      const neighbor = products[targetIndex];
+      if (!canAccessProduct(neighbor, req.user)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Cannot reorder past another seller\'s product in this category',
+        });
+      }
+    }
 
     if (targetIndex < 0 || targetIndex >= products.length) {
       const unchanged = await Product.find({ isActive: true, category: product.category })
